@@ -1,0 +1,3 @@
+C:/Users/Asus/source/repos/hw_tensor_compilers/out/build/x64-debug/CMakeFiles/hw_tensor_compilers.dir
+C:/Users/Asus/source/repos/hw_tensor_compilers/out/build/x64-debug/CMakeFiles/edit_cache.dir
+C:/Users/Asus/source/repos/hw_tensor_compilers/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
