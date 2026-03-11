@@ -1,6 +1,7 @@
 ﻿# TODO:
 # 0. add command to copy data/
 
+
 cmake_minimum_required(VERSION 3.15)
 project(hw_tensor_compilers)
 
@@ -8,17 +9,30 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# ============ Dependencies: ==================================
 
-# 1. Поиск Protobuf (должен быть установлен в системе или через vcpkg)
+# =========================== Protobuf: =======================
+
+# Protobuf is required for onnx.pb.h (input of .onnx files)
 find_package(Protobuf REQUIRED)
 
-# 2. Пути к папкам
 set(PROTO_INPUT_DIR "hw_tensor_compilers/deps/protobuf")
 set(PROTO_SRC "${PROTO_INPUT_DIR}/onnx.proto")
 
-# 3. Генерация файлов
-# Генерирует ${CMAKE_CURRENT_BINARY_DIR}/onnx.pb.h и onnx.pb.cc
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS "${PROTO_SRC}")
+
+# ========================== Google Tests: =====================
+
+find_package(GTest CONFIG REQUIRED)
+
+enable_testing()
+add_executable(my_tests hw_tensor_compilers/tests/test_main.cpp)
+target_link_libraries(my_tests PRIVATE GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(my_tests)
+
+# ============ add_executable: ================================
 
 set(SOURCES
     "hw_tensor_compilers/include/graph/attributes.hpp"
@@ -30,30 +44,24 @@ set(SOURCES
 
     "hw_tensor_compilers/src/main.cpp"
 )
-# "hw_tensor_compilers/src/io/out_graph_graphviz.cpp"
 
-# 4. Создание исполняемого файла
 add_executable(${PROJECT_NAME} 
     ${SOURCES}
     ${PROTO_SRCS} 
-    ${PROTO_HDRS} 
-#    "hw_tensor_compilers/include/graph_2/value.h" 
-#    "hw_tensor_compilers/include/graph_2/basic_types.h" 
-#    "hw_tensor_compilers/include/graph_2/node.h"
+    ${PROTO_HDRS}
 )
 
-# 5. Настройка путей включения (#include)
 target_include_directories(${PROJECT_NAME} 
     PRIVATE 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/src"
-    "${CMAKE_CURRENT_BINARY_DIR}" # Здесь лежат сгенерированные .pb.h
+    "${CMAKE_CURRENT_BINARY_DIR}" # generated onnx.pb.h is here
 )
 
-# 6. Линковка с библиотеками Protobuf
+# Link with Protobuf
 target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf)
 
-# 7. Специфичные настройки для Visual Studio (группировка файлов)
+# Setting for Visual Studio (file groups)
 source_group("Generated" FILES ${PROTO_SRCS} ${PROTO_HDRS})
 
 # add_custom_command(
