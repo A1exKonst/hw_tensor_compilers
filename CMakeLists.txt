@@ -26,7 +26,18 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS "${PROTO_SRC}")
 find_package(GTest CONFIG REQUIRED)
 
 enable_testing()
-add_executable(my_tests hw_tensor_compilers/tests/test_main.cpp)
+
+add_executable(my_tests 
+    hw_tensor_compilers/tests/test_main.cpp
+    "hw_tensor_compilers/src/graph/graph.cpp"
+)
+
+target_include_directories(my_tests PRIVATE 
+    "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"
+    "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/src"
+    "${CMAKE_CURRENT_BINARY_DIR}" # для onnx.pb.h
+)
+
 target_link_libraries(my_tests PRIVATE GTest::gtest_main)
 
 include(GoogleTest)
