@@ -10,11 +10,11 @@ int main() {
 	try {
 		std::cout << "test 0.1.36" << std::endl;
 
-		std::string filename = "data/tiny.onnx";
+		std::string filename = "data/single_gemm.onnx";
 
 		graph_engine::Graph graph = io::import_from_model(filename);
 
-		semantics::decorate_graph(graph);
+		//semantics::decorate_graph(graph);
 
 		std::cout << graph << std::endl;
 	}

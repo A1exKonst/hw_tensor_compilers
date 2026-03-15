@@ -220,4 +220,5 @@ namespace semantics {
 		return dt1;
 	};
 
+	//graph_engine::Shape calculate_matmul_shapes(graph_engine::Shape first, graph_engine::Shape second) {};
 };

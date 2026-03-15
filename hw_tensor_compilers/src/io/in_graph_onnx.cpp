@@ -21,9 +21,9 @@ Graph io::import_from_model(const std::string& filename) {
 
     protobuf_model.ParseFromIstream(&input);
 
-    std::cout << "File: " << filename << std::endl;
-    std::cout << "IR version: " << protobuf_model.ir_version() << std::endl;
-    std::cout << "Producer: " << protobuf_model.producer_name() << std::endl << std::endl;
+    // std::cout << "File: " << filename << std::endl;
+    // std::cout << "IR version: " << protobuf_model.ir_version() << std::endl;
+    // std::cout << "Producer: " << protobuf_model.producer_name() << std::endl << std::endl;
 
     return io::import_from_model(protobuf_model);
 };
@@ -106,10 +106,14 @@ Graph io::import_from_model(const onnx::ModelProto& model) {
 
         // parse Node outputs
         for (const auto& output_value_name : onnx_node.output()) {
-
             ValueID output_value_id;
-            if (name_to_value_id.contains(output_value_name)) output_value_id = name_to_value_id.at(output_value_name);
-            else output_value_id = graph.add_value({}, DataType::UNDEFINED, new_node_id);
+            if (name_to_value_id.contains(output_value_name)) {
+                output_value_id = name_to_value_id.at(output_value_name);
+                graph.values[output_value_id].producer_node_id = new_node_id;
+            }
+            else {
+                output_value_id = graph.add_value({}, DataType::UNDEFINED, new_node_id);
+            };
 
             graph.nodes[new_node_id].outputs.push_back(output_value_id);
             name_to_value_id[output_value_name] = output_value_id;
@@ -181,7 +185,6 @@ AttributeValue io::parse_attribute(const onnx::AttributeProto& attr) {
         return 0;
     }
 }
-
 
 ValueID io::convert_value_info(const onnx::ValueInfoProto& info, Graph& g) {
     Shape shape;

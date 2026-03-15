@@ -1,0 +1,23 @@
+pytorch2.0.1:Ö
+£
+input_tensor
+conv.weight
+	conv.biasoutput_conv
+/conv/Conv"Conv*
+	dilations@@ *
+group *
+kernel_shape@@ *
+pads@@@@ *
+strides@@ 	torch_jit*=Bconv.weightJ$€‘ç=¶™>ð‡¼‰Ü™>£sŸ>Ú>LÀï=É†>—?¢¾*B	conv.biasJÁ‰>Z&
+input_tensor
+
+
+
+
+b%
+output_conv
+
+
+
+
+B

@@ -1,0 +1,18 @@
+pytorch2.0.1:’
+0
+input
+onnx::MatMul_1output/MatMul"MatMul	torch_jitZ
+input
+
+
+
+Z 
+onnx::MatMul_1
+
+
+
+b
+output
+
+
+B
