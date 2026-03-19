@@ -203,7 +203,7 @@ namespace semantics {
 		if (graph.nodes.at(node_id).attr.at(name) == attr) return;
 
 		Node& node = graph.nodes[node_id];
-		if (node.attr.contains(name)) {
+		if (node.attr.find(name) != node.attr.end()) {
 			throw std::runtime_error("N" + std::to_string(node_id) + 
 				": tried to initialize attribute '" + name + "', when it is already initialized");
 		};

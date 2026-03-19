@@ -51,7 +51,7 @@ namespace graph_engine {
         Shape& operator=(const Shape&) = default;
         Shape& operator=(Shape&&) = default;
 
-        bool operator== (const Shape&) const = default;
+        bool operator== (const Shape&) const; // = default; (min c++20)
 
         Shape(size_t rank__) {
             std::cout << std::endl << "received rank: " << rank__;

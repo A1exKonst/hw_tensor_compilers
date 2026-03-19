@@ -86,7 +86,7 @@ Graph io::import_from_model(const onnx::ModelProto& model) {
         // parse Node inputs
         std::vector<ValueID> inputs;
         for (const auto& input_value_name : onnx_node.input()) {
-            if (name_to_value_id.contains(input_value_name)) {
+            if (name_to_value_id.find(input_value_name) != name_to_value_id.end()) {
                 ValueID input_value_id = name_to_value_id.at(input_value_name);
                 inputs.push_back(input_value_id);
             }
@@ -107,7 +107,7 @@ Graph io::import_from_model(const onnx::ModelProto& model) {
         // parse Node outputs
         for (const auto& output_value_name : onnx_node.output()) {
             ValueID output_value_id;
-            if (name_to_value_id.contains(output_value_name)) {
+            if (name_to_value_id.find(output_value_name) != name_to_value_id.end()) {
                 output_value_id = name_to_value_id.at(output_value_name);
                 graph.values[output_value_id].producer_node_id = new_node_id;
             }
@@ -134,7 +134,7 @@ DataType io::map_dtype(int32_t onnx_type) {
 
 OperatorType io::map_operator_type(const std::string& op) {
 
-    if (!str_to_operator_type.contains(op)) {
+    if (str_to_operator_type.find(op) == str_to_operator_type.end()) {
         throw std::runtime_error("No corresponding OperatorType found: '" + op + "'");
     };
 

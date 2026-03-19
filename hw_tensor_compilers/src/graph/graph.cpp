@@ -29,6 +29,16 @@ namespace graph_engine {
 
     size_t Shape::rank() const noexcept { return rank_;};
 
+    bool Shape::operator== (const Shape& other) const {
+
+        if (rank_ != other.rank()) return false;
+
+        for (int i = 0; i < rank_; ++i) {
+            if (dims[i] != other[i]) return false; 
+        }
+        return true;
+    };
+
     void Graph::reserve(size_t nodes_count, size_t values_count) {
         nodes.reserve(nodes_count);
         values.reserve(values_count);

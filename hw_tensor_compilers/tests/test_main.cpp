@@ -249,10 +249,10 @@ TEST(OnnxImport, SingleGemmModel) {
     EXPECT_TRUE(is_output_value_correct);
     
     // Gemm atributes:
-    ASSERT_TRUE(node.attr.contains("alpha"));
+    ASSERT_TRUE(node.attr.find("alpha") != node.attr.end());
     EXPECT_EQ(std::get<float>(node.attr.at("alpha")), 1);
-    ASSERT_TRUE(node.attr.contains("transB"));
+    ASSERT_TRUE(node.attr.find("transB") != node.attr.end());
     EXPECT_EQ((bool) std::get<int64_t>(node.attr.at("transB")), true);
-    ASSERT_TRUE(node.attr.contains("beta"));
+    ASSERT_TRUE(node.attr.find("beta") != node.attr.end());
     EXPECT_EQ(std::get<float>(node.attr.at("beta")), 1);
 };
