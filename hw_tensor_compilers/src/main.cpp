@@ -8,7 +8,7 @@
 int main() {
 
 	try {
-		std::cout << "test 0.1.36" << std::endl;
+		std::cout << "test 0.1.41" << std::endl;
 
 		std::string filename = "data/single_gemm.onnx";
 

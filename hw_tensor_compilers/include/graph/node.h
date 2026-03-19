@@ -34,7 +34,7 @@ namespace graph_engine {
 
         Node() = default;
         Node(const Node&) = default;
-        Node(Node&&) = default;
+        Node(Node&&) noexcept = default;
         ~Node() = default;
         Node& operator=(const Node&) = default;
         Node& operator=(Node&&) = default;

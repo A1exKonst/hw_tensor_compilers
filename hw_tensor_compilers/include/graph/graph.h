@@ -16,7 +16,7 @@ namespace graph_engine {
 
         Graph() = default;
         Graph(const Graph&) = default;
-        Graph(Graph&&) = default;
+        Graph(Graph&&) noexcept = default;
         ~Graph() = default;
 
         Graph(std::vector<Node> nodes_, std::vector<Value> values_, 

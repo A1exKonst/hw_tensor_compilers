@@ -46,7 +46,7 @@ namespace graph_engine {
     public:
         Shape() : rank_(0), dims({ 0,0,0,0,0,0,0,0,0,0 }) {};
         Shape(const Shape&) = default;
-        Shape(Shape&&) = default;
+        Shape(Shape&&) noexcept = default;
         ~Shape() = default;
         Shape& operator=(const Shape&) = default;
         Shape& operator=(Shape&&) = default;
@@ -79,7 +79,7 @@ namespace graph_engine {
         // optionally SmallVector, but it is a studying project, so std::vector was left.
 
         Value(const Value&) = default;
-        Value(Value&&) = default;
+        Value(Value&&) noexcept = default;
         ~Value() = default;
         Value& operator=(const Value&) = default;
         Value& operator=(Value&&) = default;
