@@ -1,7 +1,11 @@
 #pragma once
 #include "graph/graph.h"
+
 #include <cassert>
 #include <exception>
+#include <optional>
+#include <algorithm>
+
 #include "io/out_graph_console.h"
 
 namespace graph_engine {
@@ -38,6 +42,40 @@ namespace graph_engine {
             if (dims[i] != other[i]) return false; 
         }
         return true;
+    };
+
+    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2) {
+
+        unsigned min_rank = (s1.rank() < s2.rank()) ? s1.rank() : s2.rank();
+        unsigned max_rank = (s1.rank() > s2.rank()) ? s1.rank() : s2.rank();
+        const Shape& max_rank_shape = (s1.rank() > s2.rank()) ? s1 : s2;
+
+        Shape result = Shape(max_rank);
+        
+        for (int i = 1; i < min_rank + 1; ++i) {
+            auto first_dim = s1[s1.rank() - i];
+            auto second_dim = s2[s2.rank() - i];
+            bool is_compatible = ((first_dim == second_dim) || 
+                                  (first_dim == 1) || 
+                                  (second_dim == 1));
+            if (!is_compatible) return std::nullopt;
+            result[max_rank - i] = std::max(first_dim, second_dim);
+        }
+
+        for (int i = 0; i < max_rank - min_rank; ++i) {
+            result[i] = max_rank_shape[i];
+        }
+
+        return result;
+    };
+
+    DataType math_result_data_type(DataType dt1, DataType dt2) {
+        if ((dt1 == DataType::DELETED_VALUE) ||
+            (dt2 == DataType::DELETED_VALUE)) {
+            throw std::runtime_error("Tried to get math_result.dtype, but it is DataType::DELETED_VALUE");
+        };
+        if (static_cast<uint8_t>(dt1) < static_cast<uint8_t>(dt2)) return dt2;
+        return dt1;
     };
 
     void Graph::reserve(size_t nodes_count, size_t values_count) {

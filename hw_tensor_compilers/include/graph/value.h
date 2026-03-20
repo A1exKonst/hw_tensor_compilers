@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <string>
 #include <iostream>
+#include <optional>
 
 namespace graph_engine {
     using NodeID = size_t;
@@ -27,6 +28,8 @@ namespace graph_engine {
         INT64 = 3,
         BOOL = 4,
     };
+
+    DataType math_result_data_type(DataType dt1, DataType dt2);
 
     inline const std::unordered_map<DataType, std::string> data_type_to_str = {
         {graph_engine::DataType::BOOL,"BOOL"},  {graph_engine::DataType::FLOAT32,"FLOAT32"},
@@ -54,7 +57,6 @@ namespace graph_engine {
         bool operator== (const Shape&) const; // = default; (min c++20)
 
         Shape(size_t rank__) {
-            std::cout << std::endl << "received rank: " << rank__;
             rank(rank__); 
         };
 
@@ -75,6 +77,8 @@ namespace graph_engine {
         using const_iterator = const int64_t*;
         using iterator = const_iterator;
     };
+
+    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2);
 
     class Value {
     public:

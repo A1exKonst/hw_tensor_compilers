@@ -13,8 +13,4 @@ namespace semantics {
 	void expect_shape(graph_engine::Graph& graph, 
 					  graph_engine::ValueID value_id, 
 					  graph_engine::Shape shape);
-
-	graph_engine::Shape calculate_matmul_shapes(graph_engine::Shape first, graph_engine::Shape second);
-
-	graph_engine::DataType math_result_data_type(graph_engine::DataType dt1, graph_engine::DataType dt2);
 };

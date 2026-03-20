@@ -1,8 +1,11 @@
 #pragma once
 #include "graph/semantics.h"
-#include "graph/graph.h"
+
 #include <utility>
 #include <type_traits>
+#include <algorithm>
+
+#include "graph/graph.h"
 #include "io/out_graph_console.h"
 
 using namespace graph_engine;
@@ -22,21 +25,27 @@ namespace semantics {
 		switch (node.op_type) {
 		case OperatorType::ADD:
 		case OperatorType::MUL: {
+			expect(node.inputs.size() == 2, "Node[Add || Mul] : two input Values are expected");
 			expect(node.outputs.size() == 1, "Node[Add || Mul] : one output Value is expected");
 
 			ValueID out = node.outputs.at(0);
 			ValueID first = node.inputs.at(0);
 			ValueID second = node.inputs.at(1);
 
-			DataType result_type = math_result_data_type(
+			DataType result_type = graph_engine::math_result_data_type(
 				graph.values.at(first).dtype,
 				graph.values.at(second).dtype);
-
 			expect_dtype(graph, first, result_type);
 			expect_dtype(graph, second, result_type);
 			expect_dtype(graph, out, result_type);
 
-			// expect shapes
+			std::optional<Shape> result_shape = graph_engine::calculate_broadcast_compatible_shape(
+				graph.values[first].shape, 
+				graph.values[second].shape);
+			expect(result_shape.has_value(), "Node[Add || Mul] : couldn't broadcast shapes");
+			expect_shape(graph, first, result_shape.value());
+			expect_shape(graph, second, result_shape.value());
+			expect_shape(graph, out, std::move(result_shape.value()));
 			break;
 		}
 		case OperatorType::CONSTANT:{
@@ -63,8 +72,8 @@ namespace semantics {
 			Value& second_val = graph.values.at(second);
 			Value& third_val = graph.values.at(third);
 
-			DataType result_type = math_result_data_type(
-				math_result_data_type(
+			DataType result_type = graph_engine::math_result_data_type(
+				graph_engine::math_result_data_type(
 					first_val.dtype,
 					second_val.dtype),
 				third_val.dtype);
@@ -124,7 +133,7 @@ namespace semantics {
 			ValueID second = node.inputs.at(1);
 
 			// expect dtypes:
-			DataType result_type = math_result_data_type(graph.values.at(first).dtype,graph.values.at(second).dtype);
+			DataType result_type = graph_engine::math_result_data_type(graph.values.at(first).dtype,graph.values.at(second).dtype);
 			expect_dtype(graph, first, result_type);
 			expect_dtype(graph, second, result_type);
 			expect_dtype(graph, out, result_type);

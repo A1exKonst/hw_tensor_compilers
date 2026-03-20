@@ -18,6 +18,7 @@ namespace graph_engine {
         GEMM,
         
         DTYPE_CONVERSION,
+        SHAPE_BROADCAST,
         CONSTANT,
         INPUT
     };
