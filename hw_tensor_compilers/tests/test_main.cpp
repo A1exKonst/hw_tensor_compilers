@@ -171,13 +171,9 @@ TEST(OnnxImport, SingleMatMulModel) {
     EXPECT_EQ(v2.dtype, graph_engine::DataType::FLOAT32);
     EXPECT_EQ(out.dtype, graph_engine::DataType::FLOAT32);
 
-    bool is_first_value_correct = (v1.shape.rank() == 2) && (v1.shape[0] == 5) && (v1.shape[1] == 10);
-    bool is_second_value_correct = (v2.shape.rank() == 2) && (v2.shape[0] == 10) && (v2.shape[1] == 5);
-    bool is_output_value_correct = (out.shape.rank() == 2) && (out.shape[0] == 5) && (out.shape[1] == 5);
-
-    EXPECT_TRUE(is_first_value_correct);
-    EXPECT_TRUE(is_second_value_correct);
-    EXPECT_TRUE(is_output_value_correct);
+    EXPECT_THAT(v1.shape, ::testing::ElementsAre(5,10));
+    EXPECT_THAT(v2.shape, ::testing::ElementsAre(10, 5));
+    EXPECT_THAT(out.shape, ::testing::ElementsAre(5, 5));
 };
 
 TEST(OnnxImport, SingleConvModel) {
@@ -189,6 +185,41 @@ TEST(OnnxImport, SingleConvModel) {
 
     EXPECT_THAT(graph.inputs, ::testing::ElementsAre(0));
     EXPECT_THAT(graph.outputs, ::testing::ElementsAre(1));
+
+    // Nodes:
+    
+    for (int i = 0; i < 2; ++i) {
+        EXPECT_EQ(graph.nodes[i].op_type, graph_engine::OperatorType::CONSTANT);
+        EXPECT_THAT(graph.nodes[i].inputs, ::testing::ElementsAre());
+        EXPECT_THAT(graph.nodes[i].outputs, ::testing::ElementsAre((2 + i)));
+    }
+    graph_engine::Node& node = graph.nodes[2];
+    EXPECT_EQ(node.op_type, graph_engine::OperatorType::CONV);
+    EXPECT_THAT(node.inputs, ::testing::ElementsAre(0, 2, 3));
+    EXPECT_THAT(node.outputs, ::testing::ElementsAre(1));
+
+    // TODO: Node Conv Attrs
+
+    // Values:
+
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_EQ(graph.values[i].dtype, graph_engine::DataType::FLOAT32);
+    }
+
+    EXPECT_EQ(graph.values[0].producer_node_id, size_t(-1));
+    EXPECT_EQ(graph.values[1].producer_node_id, 2);
+    EXPECT_EQ(graph.values[2].producer_node_id, 0);
+    EXPECT_EQ(graph.values[3].producer_node_id, 1);
+
+    EXPECT_THAT(graph.values[0].consumer_node_ids, ::testing::ElementsAre(2));
+    EXPECT_THAT(graph.values[1].consumer_node_ids, ::testing::ElementsAre());
+    EXPECT_THAT(graph.values[2].consumer_node_ids, ::testing::ElementsAre(2));
+    EXPECT_THAT(graph.values[3].consumer_node_ids, ::testing::ElementsAre(2));
+
+    EXPECT_THAT(graph.values[0].shape, ::testing::ElementsAre(1,1,28,28));
+    EXPECT_THAT(graph.values[1].shape, ::testing::ElementsAre(1, 1, 28, 28));
+    EXPECT_THAT(graph.values[2].shape, ::testing::ElementsAre(1, 1, 3, 3));
+    EXPECT_THAT(graph.values[3].shape, ::testing::ElementsAre(1));
 
     ASSERT_TRUE(false) << " OnnxImport::SingleConvModel: test not ready to be used";
 };

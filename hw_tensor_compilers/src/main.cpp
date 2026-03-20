@@ -10,7 +10,7 @@ int main() {
 	try {
 		std::cout << "test 0.1.45" << std::endl;
 
-		std::string filename = "data/single_gemm.onnx";
+		std::string filename = "data/single_conv.onnx";
 
 		graph_engine::Graph graph = io::import_from_model(filename);
 

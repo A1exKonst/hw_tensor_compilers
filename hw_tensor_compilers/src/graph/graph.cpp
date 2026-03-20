@@ -1,17 +1,18 @@
 #pragma once
 #include "graph/graph.h"
 #include <cassert>
+#include <exception>
 #include "io/out_graph_console.h"
 
 namespace graph_engine {
 
     int64_t Shape::operator[](size_t i) const {
-        assert(i < rank_);
+        if (i >= rank_) throw std::out_of_range("index >= shape::rank");
         return dims[i];
     };
 
     int64_t& Shape::operator[](size_t i) {
-        assert(i < rank_);
+        if (i >= rank_) throw std::out_of_range("index >= shape::rank");
         return dims[i];
     };
 

@@ -65,6 +65,15 @@ namespace graph_engine {
         void rank(size_t rank__);
 
         size_t rank() const noexcept;
+
+
+        // std container interface:
+        auto begin() const noexcept { return dims.data(); }
+        auto end() const noexcept { return dims.data() + rank_; }
+        size_t size() const noexcept {return rank_; }
+        using value_type = int64_t;
+        using const_iterator = const int64_t*;
+        using iterator = const_iterator;
     };
 
     class Value {
