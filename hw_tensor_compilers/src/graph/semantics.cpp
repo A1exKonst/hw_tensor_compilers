@@ -21,8 +21,7 @@ namespace semantics {
 		Node& node = graph.nodes.at(node_id);
 		switch (node.op_type) {
 		case OperatorType::ADD:
-		case OperatorType::MUL:
-		{
+		case OperatorType::MUL: {
 			expect(node.outputs.size() == 1, "Node[Add || Mul] : one output Value is expected");
 
 			ValueID out = node.outputs.at(0);
@@ -44,11 +43,11 @@ namespace semantics {
 			expect(node.outputs.size() == 1, "Node[Constant] : one output Value is expected");
 			break;
 		}
-		case OperatorType::CONV:
+		case OperatorType::CONV: {
 			expect(false, "Node[Conv] : not supported");
 			break;
-		case OperatorType::GEMM:
-		{
+		}
+		case OperatorType::GEMM: {
 			// expect input output arguments amount:
 			expect(node.outputs.size() == 1,"Node[Gemm] : one output Value is expected");
 			expect(node.inputs.size() == 3,	"Node[Gemm] : 3 input Values are expected");
@@ -114,36 +113,54 @@ namespace semantics {
 			expect(false, "Node[Input] : not supported");
 			break;
 		}
-		case OperatorType::MATMUL:
-		{
-			// expect input output arguments amount:
-			expect(node.outputs.size() == 1, "Node[Gemm] : one output Value is expected");
-			expect(node.inputs.size() == 2, "Node[Gemm] : 3 input Values are expected");
+		case OperatorType::MATMUL: {
+			expect(node.outputs.size() == 1, 
+				"Node[Gemm] : one output Value is expected");
+			expect(node.inputs.size() == 2, 
+				"Node[Gemm] : 3 input Values are expected");
 
-
-			// expect dtypes:
 			ValueID out = node.outputs.at(0);
 			ValueID first = node.inputs.at(0);
 			ValueID second = node.inputs.at(1);
 
-			DataType result_type = math_result_data_type(
-				graph.values.at(first).dtype,
-				graph.values.at(second).dtype);
-
+			// expect dtypes:
+			DataType result_type = math_result_data_type(graph.values.at(first).dtype,graph.values.at(second).dtype);
 			expect_dtype(graph, first, result_type);
 			expect_dtype(graph, second, result_type);
 			expect_dtype(graph, out, result_type);
 
-
 			// expect shapes:
+			auto result_rank = graph.values[first].shape.rank();
+			expect(result_rank == graph.values[second].shape.rank(), 
+				"Node[MatMul] : equal ranks of input Values are expected");
+
+			Shape result_shape = Shape(result_rank);
+
+			// expect shapes: Broadcasting:
+			for (int i = 0; i < result_rank - 2; ++i) {
+				expect(graph.values[first].shape[i] == graph.values[second].shape[i],
+					"Node[MatMul] : different broadcasted shape dimensions found");
+				result_shape[i] = graph.values[first].shape[i];
+			}
+
+			// expect shapes: MatMul last 2 dims:
+			expect(graph.values[first].shape[result_rank - 1] == graph.values[second].shape[result_rank - 2],
+				"Node[MatMul] : tensors last 2 dims (M*N1 and N2*K). N1 == N2 is expected, but it is false");
+			result_shape[result_rank - 2] = graph.values[first].shape[result_rank - 2];  // dimension M
+			result_shape[result_rank - 1] = graph.values[second].shape[result_rank - 1]; // dimension K
+
+			graph.values[out].shape = std::move(result_shape);
 			break;
 		}
-		case OperatorType::RELU:
-		{
+		case OperatorType::RELU: {
 			expect(node.outputs.size() == 1, "Node[Relu] : one output Value is expected");
 			expect(node.inputs.size() == 1,  "Node[Relu] : one input Value is expected");
 			expect_dtype(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).dtype); // expect equal dtypes
 			expect_shape(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).shape); // expect equal shapes
+			break;
+		}
+		default: {
+			throw std::runtime_error("decorate_graph(graph.nodes[" + std::to_string(node_id) + "]) : no such OperatorType known.");
 			break;
 		}
 		};

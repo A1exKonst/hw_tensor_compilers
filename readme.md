@@ -8,7 +8,7 @@ Requirements:
 Отчет:
 0. Граф хранится в памяти в виде flat graph (nodes + values).
 1. В построении графа поддерживаются Conv, ReLu, MatMul, Gemm, Add, Mul.
-2. В семантическом анализе (вывод Shape, dtype) полностью поддерживаются ReLu, Gemm.
+2. В семантическом анализе (вывод Shape, dtype) полностью поддерживаются ReLu, Gemm, MatMul.
 3. Поддерживается вывод графа в консоль.
 4. Проверка была на 5 тестах модуля OnnxImport ( импорт разных типов Node) и на 1 тесте Sequential(Gemm, ReLu, Gemm, ReLu, Gemm)
 
@@ -16,7 +16,7 @@ Requirements:
 Недостатки:
 1. gtest есть, но тестами полностью покрыт только OnnxImport.
 2. graphviz не поддерживается.
-3. Семантический анализ не поддерживает Conv, MatMul, Add, Mul.
+3. Семантический анализ не поддерживает Conv, Add, Mul.
 
 
 Вопрос к review:
