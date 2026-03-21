@@ -32,6 +32,8 @@ add_executable(my_tests
     "hw_tensor_compilers/src/io/out_graph_console.cpp"
     "hw_tensor_compilers/src/graph/graph.cpp"
     "hw_tensor_compilers/tests/test_main.cpp"
+    "hw_tensor_compilers/tests/test_shape.cpp" 
+    "hw_tensor_compilers/tests/test_onnx_import.cpp"
     ${PROTO_SRCS}   
     ${PROTO_HDRS}
     #"hw_tensor_compilers/src/io/in_graph_onnx.cpp"
@@ -65,8 +67,7 @@ set(SOURCES
 add_executable(${PROJECT_NAME} 
     ${SOURCES}
     ${PROTO_SRCS} 
-    ${PROTO_HDRS}
-)
+    ${PROTO_HDRS})
 
 target_include_directories(${PROJECT_NAME} 
     PRIVATE 
@@ -86,11 +87,3 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/hw_tensor_compilers/data")
 else()
     message(WARNING "Folder data not found! Could not be copied to binary dir.")
 endif()
-
-
-# add_custom_command(
-#    TARGET ${PROJECT_NAME} POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory
-#        "${CMAKE_CURRENT_SOURCE_DIR}/data"
-#        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/data"
-#)
