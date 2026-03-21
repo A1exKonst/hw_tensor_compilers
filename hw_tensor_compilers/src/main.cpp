@@ -8,7 +8,7 @@
 int main() {
 
 	try {
-		std::cout << "exec 0.1.61" << std::endl;
+		std::cout << "exec 0.1.63" << std::endl;
 
 		std::string filename = "data/single_conv.onnx";
 
