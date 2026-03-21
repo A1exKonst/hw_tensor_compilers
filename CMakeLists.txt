@@ -1,8 +1,4 @@
-﻿# TODO:
-# 0. add command to copy data/
-
-
-cmake_minimum_required(VERSION 3.15)
+﻿cmake_minimum_required(VERSION 3.15)
 project(hw_tensor_compilers)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -11,15 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ============ Dependencies: ==================================
 
-# =========================== Protobuf: =======================
-
-# Protobuf is required for onnx.pb.h (input of .onnx files)
-find_package(Protobuf REQUIRED)
-
-set(PROTO_INPUT_DIR "hw_tensor_compilers/deps/protobuf")
-set(PROTO_SRC "${PROTO_INPUT_DIR}/onnx.proto")
-
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS "${PROTO_SRC}")
+add_subdirectory(hw_tensor_compilers/deps/protobuf)
 
 # ========================== Google Tests: =====================
 
@@ -46,7 +34,7 @@ target_include_directories(my_tests PRIVATE
 )
 
 target_link_libraries(my_tests PRIVATE GTest::gtest_main)
-target_link_libraries(my_tests PRIVATE protobuf::libprotobuf)
+target_link_libraries(my_tests PRIVATE onnx_proto)
 
 include(GoogleTest)
 gtest_discover_tests(my_tests)
@@ -77,7 +65,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # Link with Protobuf
-target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf)
+target_link_libraries(${PROJECT_NAME} PRIVATE onnx_proto)
 
 # Setting for Visual Studio (file groups)
 source_group("Generated" FILES ${PROTO_SRCS} ${PROTO_HDRS})
