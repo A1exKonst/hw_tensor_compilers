@@ -8,7 +8,11 @@ std::ostream& operator<< (std::ostream& out, const AttributeValue& attr_val) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::vector<int64_t>> ||
             std::is_same_v<T, std::vector<float>>) {
-            std::cout << "[vector size " << arg.size() << "]";
+            std::cout << "vector{";
+            for (auto&& element : arg) {
+                std::cout << element << ",";
+            }
+            std::cout << "}";
         }
         else {
             std::cout << arg; // float, int64_t and string
