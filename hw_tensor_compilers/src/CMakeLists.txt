@@ -3,7 +3,8 @@ add_library(tensor_compiler_lib STATIC
     "graph/datatype.cpp"
     "graph/shape.cpp" 
     "graph/graph.cpp"
-    "graph/semantics.cpp" 
+
+    "passes/semantics.cpp" 
 
     "io/in_graph_onnx.cpp"
     "io/out_graph_console.cpp"

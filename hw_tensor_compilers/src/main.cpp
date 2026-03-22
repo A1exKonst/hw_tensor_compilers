@@ -3,20 +3,20 @@
 
 #include "io/in_graph_onnx.h"
 #include "io/out_graph_console.h"
-#include "graph/semantics.h"
+#include "passes/semantics.h"
 
 int main() {
 
 	try {
-		std::cout << "exec 0.1.72" << std::endl;
+		std::string version = "0.1.75";
+		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_conv.onnx";
-
+		std::string filename = "data/singe_conv.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
-
-		//semantics::decorate_graph(graph);
-
+		semantics::decorate_graph(graph);
 		std::cout << graph << std::endl;
+
+		std::cout << "exec " << version << std::endl;
 	}
 	catch (std::exception e) {
 		std::cout << e.what() << std::endl;

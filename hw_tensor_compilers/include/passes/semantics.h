@@ -1,5 +1,5 @@
 #pragma once
-#include "graph.h"
+#include "graph/graph.h"
 
 namespace semantics {
 	void decorate_graph(graph_engine::Graph& graph);

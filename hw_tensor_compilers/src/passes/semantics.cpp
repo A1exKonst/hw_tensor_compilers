@@ -1,5 +1,5 @@
 #pragma once
-#include "graph/semantics.h"
+#include "passes/semantics.h"
 
 #include <utility>
 #include <type_traits>
