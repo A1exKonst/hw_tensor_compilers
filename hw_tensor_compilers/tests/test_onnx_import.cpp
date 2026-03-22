@@ -153,8 +153,8 @@ TEST(OnnxImport, SingleConvModel) {
     ASSERT_EQ(graph.nodes.size(), 3);
     ASSERT_EQ(graph.values.size(), 4);
 
-    EXPECT_THAT(graph.inputs, ::testing::ElementsAre(0));
-    EXPECT_THAT(graph.outputs, ::testing::ElementsAre(1));
+    EXPECT_THAT(graph.inputs,   ::testing::ElementsAre(0));
+    EXPECT_THAT(graph.outputs,  ::testing::ElementsAre(1));
 
     // Nodes:
 
@@ -168,7 +168,12 @@ TEST(OnnxImport, SingleConvModel) {
     EXPECT_THAT(node.inputs, ::testing::ElementsAre(0, 2, 3));
     EXPECT_THAT(node.outputs, ::testing::ElementsAre(1));
 
-    // TODO: Node Conv Attrs
+    // Nodes Conv Attrs:
+    EXPECT_EQ(std::get<int64_t>(node.attr.at("group")),                         1);
+    EXPECT_THAT(std::get<std::vector<int64_t>>(node.attr.at("dilations")),      ::testing::ElementsAre(1,1));
+    EXPECT_THAT(std::get<std::vector<int64_t>>(node.attr.at("kernel_shape")),   ::testing::ElementsAre(3,3));
+    EXPECT_THAT(std::get<std::vector<int64_t>>(node.attr.at("pads")),           ::testing::ElementsAre(1,1,1,1));
+    EXPECT_THAT(std::get<std::vector<int64_t>>(node.attr.at("strides")),        ::testing::ElementsAre(1,1));
 
     // Values:
 
@@ -190,8 +195,6 @@ TEST(OnnxImport, SingleConvModel) {
     EXPECT_THAT(graph.values[1].shape, ::testing::ElementsAre(1, 1, 28, 28));
     EXPECT_THAT(graph.values[2].shape, ::testing::ElementsAre(1, 1, 3, 3));
     EXPECT_THAT(graph.values[3].shape, ::testing::ElementsAre(1));
-
-    ASSERT_TRUE(false) << " OnnxImport::SingleConvModel: test not ready to be used";
 };
 
 TEST(OnnxImport, SingleGemmModel) {

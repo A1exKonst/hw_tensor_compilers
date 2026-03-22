@@ -8,16 +8,17 @@ std::ostream& operator<< (std::ostream& out, const AttributeValue& attr_val) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::vector<int64_t>> ||
             std::is_same_v<T, std::vector<float>>) {
-            std::cout << "vector{";
+            std::cout << typeid(T::value_type).name() << "{[";
             for (auto&& element : arg) {
                 std::cout << element << ",";
             }
-            std::cout << "}";
+            std::cout << "]}";
         }
         else {
+            std::cout << typeid(T).name() << "{";
             std::cout << arg; // float, int64_t and string
+            std::cout << "}";
         }
-
         }, attr_val);
     return out;
 };
