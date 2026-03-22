@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "graph/graph.h"
+#include "graph/shape.h"
 
 TEST(GraphShape, ShapeInitialization) {
     graph_engine::Shape shape = graph_engine::Shape();

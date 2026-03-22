@@ -1,11 +1,9 @@
 #pragma once
 #include <vector>
-#include <array>
 #include <cstdint>
-#include <unordered_map>
-#include <string>
-#include <iostream>
-#include <optional>
+
+#include "graph/shape.h"
+#include "graph/datatype.h"
 
 namespace graph_engine {
     using NodeID = size_t;
@@ -17,68 +15,8 @@ namespace graph_engine {
 
     // Shape is a shape (or dims) of a given Value : Value.shape
     class Shape;
-
+    
     enum class DataType : uint8_t;
-
-    enum class DataType : uint8_t {
-        DELETED_VALUE = 0,
-
-        UNDEFINED = 1,
-        FLOAT32 = 2,
-        INT64 = 3,
-        BOOL = 4,
-    };
-
-    DataType math_result_data_type(DataType dt1, DataType dt2);
-
-    inline const std::unordered_map<DataType, std::string> data_type_to_str = {
-        {graph_engine::DataType::BOOL,"BOOL"},  {graph_engine::DataType::FLOAT32,"FLOAT32"},
-        {graph_engine::DataType::INT64,"INT64"},{graph_engine::DataType::UNDEFINED,"UNDEF_DTYPE"}
-    };
-
-    inline constexpr size_t MAX_VALUE_RANK = 10;
-
-    class Shape {
-    protected:
-        std::array<int64_t, MAX_VALUE_RANK> dims{0,0,0,0,0,0,0,0,0,0};
-        // std::array for cache locality, as shape is usually less than 8
-
-        size_t rank_ = 0;
-        // current rank of Value
-
-    public:
-        Shape() : rank_(0), dims({ 0,0,0,0,0,0,0,0,0,0 }) {};
-        Shape(const Shape&) = default;
-        Shape(Shape&&) noexcept = default;
-        ~Shape() = default;
-        Shape& operator=(const Shape&) = default;
-        Shape& operator=(Shape&&) = default;
-
-        bool operator== (const Shape&) const; // = default; (min c++20)
-
-        Shape(size_t rank__) {
-            rank(rank__); 
-        };
-
-        int64_t operator[](size_t i) const;
-
-        int64_t& operator[](size_t i);
-
-        void rank(size_t rank__);
-
-        size_t rank() const noexcept;
-
-
-        // std container interface:
-        auto begin() const noexcept { return dims.data(); }
-        auto end() const noexcept { return dims.data() + rank_; }
-        size_t size() const noexcept {return rank_; }
-        using value_type = int64_t;
-        using const_iterator = const int64_t*;
-        using iterator = const_iterator;
-    };
-
-    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2);
 
     class Value {
     public:
