@@ -8,12 +8,14 @@
 int main() {
 
 	try {
-		std::string version = "0.1.77";
+		std::string version = "0.1.82";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_conv.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
-		// semantics::decorate_graph(graph);
+		std::cout << graph << std::endl;
+
+		semantics::decorate_graph(graph);
 		std::cout << graph << std::endl;
 
 		std::cout << "exec " << version << std::endl;
