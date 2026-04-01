@@ -1,17 +1,22 @@
 #include <iostream>
 #include <string>
-
 #include "io/in_graph_onnx.h"
 #include "io/out_graph_console.h"
 #include "passes/semantics.h"
+#include "mlir_handler.h"
+
+//#include "llvm/Support/raw_ostream.h"
+//#include "mlir/IR/MLIRContext.h"
 
 int main() {
 
 	try {
-		std::string version = "0.1.82";
+		std::string version = "0.1.95";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_conv.onnx";
+		my_mlir::test_print();
+
+		std::string filename = "data/single_mul.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
 		std::cout << graph << std::endl;
 

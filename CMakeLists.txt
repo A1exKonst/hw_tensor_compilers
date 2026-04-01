@@ -10,9 +10,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # ============ Dependencies ==================================
 add_subdirectory(hw_tensor_compilers/deps/protobuf)
+add_subdirectory(hw_tensor_compilers/deps/llvm_mlir)
 
 # ============ Create core lib =================
-# create tensor_compiler_lib, add_executable(${PROJECT_NAME})
+# create tensor_compiler_lib, and add executable(PROJECT_NAME)
 add_subdirectory(hw_tensor_compilers/src) 
 
 # ============ Tests =========================================
