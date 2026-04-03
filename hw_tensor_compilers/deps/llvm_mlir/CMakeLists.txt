@@ -18,6 +18,12 @@ target_compile_definitions(mlir_deps INTERFACE ${LLVM_DEFINITIONS})
 
 target_link_libraries(mlir_deps INTERFACE 
     MLIRIR
+
+    MLIRLinalgDialect
+    MLIRTensorDialect
+    MLIRArithDialect
+    MLIRFuncDialect
+
     MLIRParser
     MLIRSupport
     LLVMSupport

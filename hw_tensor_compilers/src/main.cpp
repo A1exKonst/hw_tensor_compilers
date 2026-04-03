@@ -11,12 +11,12 @@
 int main() {
 
 	try {
-		std::string version = "0.1.95";
+		std::string version = "0.1.97";
 		std::cout << "exec " << version << std::endl;
 
 		my_mlir::test_print();
 
-		std::string filename = "data/single_mul.onnx";
+		std::string filename = "data/single_add.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
 		std::cout << graph << std::endl;
 
