@@ -9,8 +9,13 @@ std::ostream& operator<< (std::ostream& out, const AttributeValue& attr_val) {
         if constexpr (std::is_same_v<T, std::vector<int64_t>> ||
             std::is_same_v<T, std::vector<float>>) {
             std::cout << typeid(T::value_type).name() << "{[";
-            for (auto&& element : arg) {
-                std::cout << element << ",";
+            if (arg.size() < 9) {
+                for (auto&& element : arg) {
+                    std::cout << element << ",";
+                }
+            }
+            else {
+                std::cout << "size: " << arg.size();
             }
             std::cout << "]}";
         }

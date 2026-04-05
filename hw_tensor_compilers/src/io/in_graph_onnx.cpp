@@ -8,7 +8,7 @@
 
 using namespace graph_engine;
 
-Graph io::import_from_model(const std::string& filename) {
+auto io::import_from_model(const std::string& filename) -> Graph {
     onnx::ModelProto protobuf_model;
 
     std::ifstream model_file{ filename, std::ios::ate | std::ios::binary };
@@ -28,7 +28,7 @@ Graph io::import_from_model(const std::string& filename) {
     return io::import_from_model(protobuf_model);
 };
 
-Graph io::import_from_model(const onnx::ModelProto& model) {
+auto io::import_from_model(const onnx::ModelProto& model) -> Graph {
     Graph graph;
     const auto& onnx_graph = model.graph();
 
@@ -64,7 +64,18 @@ Graph io::import_from_model(const onnx::ModelProto& model) {
     // ================ add weight Values ============================
     for (const auto& initializer : onnx_graph.initializer()) {
         NodeID new_node_id = graph.nodes.size();
-        Node new_weight_node{ OperatorType::CONSTANT, {}, {}, Attributes() };
+        Node new_weight_node{ 
+            OperatorType::CONSTANT, 
+            {}, {}, 
+            Attributes{
+                {"weights", get_weights(initializer) }
+            }
+        };
+
+        std::cout << initializer.has_raw_data() << " "
+            << initializer.data_type() << " "
+            //<< initializer.raw_data() 
+            << std::endl;
 
         Shape shape;
         shape.rank(initializer.dims().size());
@@ -123,7 +134,7 @@ Graph io::import_from_model(const onnx::ModelProto& model) {
     return graph;
 };
 
-DataType io::map_dtype(int32_t onnx_type) {
+auto io::map_dtype(int32_t onnx_type) -> DataType {
     switch (onnx_type) {
     case onnx::TensorProto_DataType_FLOAT:  return DataType::FLOAT32;
     case onnx::TensorProto_DataType_INT64:  return DataType::INT64;
@@ -132,7 +143,7 @@ DataType io::map_dtype(int32_t onnx_type) {
     };
 };
 
-OperatorType io::map_operator_type(const std::string& op) {
+auto io::map_operator_type(const std::string& op) -> OperatorType {
 
     if (str_to_operator_type.find(op) == str_to_operator_type.end()) {
         throw std::runtime_error("No corresponding OperatorType found: '" + op + "'");
@@ -141,35 +152,41 @@ OperatorType io::map_operator_type(const std::string& op) {
     return str_to_operator_type.at(op);
 };
 
-/*
-AttributeValue io::parse_attribute(const onnx::AttributeProto& attr) {
-    //std::cout << "attributes: " <<attr.i() << " " << attr.f() << " " << attr.s() << std::endl;
-    if (attr.has_f()) return attr.f();
-    if (attr.has_i()) return (int)attr.i();
-    if (attr.has_s()) return attr.s();
-    if (attr.ints_size() > 0) {
-        std::vector<int64_t> values;
-        for (auto i : attr.ints()) values.push_back(i);
-        return values;
-    }
-    return 0;
-};
-*/
+auto io::get_weights(const onnx::TensorProto& tensor) -> AttributeValue {
+    auto type = tensor.data_type();
 
-AttributeValue io::parse_attribute(const onnx::AttributeProto& attr) {
-    /*
-    if (attr.name() == "alpha") {
-        std::cout << "DEBUG: alpha type is " << attr.type()
-            << " i=" << attr.i() << " f=" << attr.f() << std::endl;
+    if (tensor.has_raw_data()) {
+        const std::string& raw = tensor.raw_data();
+        switch (type) {
+        case onnx::TensorProto::FLOAT: {
+            const float* data = reinterpret_cast<const float*>(raw.data());
+            return std::vector<float>(data, data + (raw.size() / sizeof(float)));
+        }
+        case onnx::TensorProto::INT64: {
+            const int64_t* data = reinterpret_cast<const int64_t*>(raw.data());
+            return std::vector<int64_t>(data, data + (raw.size() / sizeof(int64_t)));
+        }
+        }
     }
-    */
+
+    switch (type) {
+    case onnx::TensorProto::FLOAT:
+        return std::vector<float>(tensor.float_data().begin(), tensor.float_data().end());
+    case onnx::TensorProto::INT64:
+        return std::vector<int64_t>(tensor.int64_data().begin(), tensor.int64_data().end());
+    }
+
+    throw std::runtime_error("ONNX weights import : not supported tensor_type: " + std::to_string(type));
+}
+
+auto io::parse_attribute(const onnx::AttributeProto& attr) -> AttributeValue {
     switch (attr.type()) {
     case onnx::AttributeProto::FLOAT:
-        return attr.f(); // Возвращает float
+        return attr.f(); // float
     case onnx::AttributeProto::INT:
-        return attr.i(); // Возвращает int64
+        return attr.i(); // int64
     case onnx::AttributeProto::STRING:
-        return attr.s(); // Возвращает string
+        return attr.s(); // string
     case onnx::AttributeProto::FLOATS: {
         std::vector<float> values;
         for (auto f : attr.floats()) values.push_back(f);
@@ -180,13 +197,12 @@ AttributeValue io::parse_attribute(const onnx::AttributeProto& attr) {
         for (auto i : attr.ints()) values.push_back(i);
         return values;
     }
-                                   // Добавь TENSOR для весов, если нужно
     default:
         return 0;
     }
 }
 
-ValueID io::convert_value_info(const onnx::ValueInfoProto& info, Graph& g) {
+auto io::convert_value_info(const onnx::ValueInfoProto& info, Graph& g) -> ValueID {
     Shape shape;
     auto onnx_shape = info.type().tensor_type().shape();
     

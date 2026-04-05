@@ -16,7 +16,7 @@ int main() {
 
 		my_mlir::test_print();
 
-		std::string filename = "data/single_add.onnx";
+		std::string filename = "data/tiny.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
 		std::cout << graph << std::endl;
 

@@ -9,58 +9,56 @@
 
 #include "graph/graph.h"
 
+namespace passes {
+
+    class GraphToMLIRConverter {
+    private:
+        const graph_engine::Graph& graph;
+
+        mlir::MLIRContext& context;
+
+        mlir::OpBuilder builder;
+
+        std::unordered_map<graph_engine::ValueID, mlir::Value> value_id_to_mlir_value;
+    public:
+        explicit GraphToMLIRConverter(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) :
+            context(context_), builder(&context), graph(graph_) {
+        };
+
+        mlir::OwningOpRef<mlir::ModuleOp> convert() {
+            auto loc = builder.getUnknownLoc();
+
+            mlir::ModuleOp module = mlir::ModuleOp::create(loc);
+            builder.setInsertionPointToStart(module.getBody());
+
+            mlir::FunctionType funcType = get_function_type(builder, graph);
+            auto funcOp = builder.create<mlir::func::FuncOp>(loc, "main", funcType);
+            mlir::Block* entryBlock = funcOp.addEntryBlock();
+            builder.setInsertionPointToStart(entryBlock);
+
+            // === void convert_graph_nodes() :
+
+            // todo: add graph.nodes visit
+            // OperatorType::CONSTANT -> arith::ConstantOp
+            // OperatorType::ADD -> arith::AddFOp, arith::AddIOp
+            // OperatorType::MUL -> arith::MulFOp, arith::MulIOp
 
 
-class GraphToMLIRConverter {
-private:
-    const graph_engine::Graph& graph;
 
-    mlir::MLIRContext& context;
+            return mlir::OwningOpRef<mlir::ModuleOp>(module);
+        };
 
-    std::unordered_map<graph_engine::ValueID, mlir::Value> value_id_to_mlir_value;
+        auto convert_value_to_mlir_value(graph_engine::NodeID node) -> mlir::Value;
 
-    mlir::Value createLinalgGemm(mlir::OpBuilder& b, std::vector<mlir::Value> inputs);
-public:
-    explicit GraphToMLIRConverter(mlir::MLIRContext& context_, mlir::OpBuilder& builder_, const graph_engine::Graph& graph_) :
-        context(context_), graph(graph_) { };
+        template <typename IntOp, typename FloatOp>
+        auto create_binary_operation(graph_engine::NodeID producer)->mlir::Value;
 
-    mlir::OwningOpRef<mlir::ModuleOp> convert() {
+        static auto datatype_to_mlir_type(mlir::OpBuilder& builder, const graph_engine::DataType dtype) -> mlir::Type;
 
-        // === init_module() :
+        static auto get_value_tensor_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph, graph_engine::ValueID value_id) -> mlir::RankedTensorType;
 
-        mlir::OpBuilder builder(&context);
-        auto loc = builder.getUnknownLoc();
+        static auto get_function_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph) -> mlir::FunctionType;
 
-        mlir::ModuleOp module = mlir::ModuleOp::create(loc);
-        builder.setInsertionPointToStart(module.getBody());
-
-        // === mlir::FunctionType determine_function_type() :
-
-        mlir::FunctionType funcType; // not ready
-        // todo: initialize func type
-        // auto tensorType = mlir::RankedTensorType::get({2, 2}, builder.getF32Type());
-        // llvm::SmallVector<mlir::Type, 1> inputs = { tensorType }; 
-        // llvm::SmallVector<mlir::Type, 1> results = { tensorType }; 
-        // mlir::FunctionType funcType = builder.getFunctionType(inputs, results);
-
-        auto funcOp = builder.create<mlir::func::FuncOp>(loc, "main", funcType);
-        mlir::Block* entryBlock = funcOp.addEntryBlock();
-        builder.setInsertionPointToStart(entryBlock);
-
-        // === void convert_graph_nodes() :
-
-        // mlir::Type datatype_to_mlir_type(graph_engine::DataType dtype);
-
-        //llvm::ArrayRef<int64_t> shapeSlice(fullShape.data(), rank);
-        //auto tensorType = mlir::RankedTensorType::get(shapeSlice, builder.getF32Type());
-
-        // todo: add graph.nodes visit
-        // OperatorType::CONSTANT -> arith::ConstantOp
-        // OperatorType::ADD -> arith::AddFOp, arith::AddIOp
-        // OperatorType::MUL -> arith::MulFOp, arith::MulIOp 
-
-        return mlir::OwningOpRef<mlir::ModuleOp>(module);
     };
 
-    mlir::Value convert_nodes_recursively(graph_engine::NodeID node);
 };

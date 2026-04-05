@@ -21,6 +21,9 @@ namespace io {
     // mapping string -> OperatorType
     graph_engine::OperatorType map_operator_type(const std::string& op);
 
+    // convert onnx::TensorProto.data() -> attributes.h::AttributeValue
+    graph_engine::AttributeValue get_weights(const onnx::TensorProto& tensor);
+
     // convert onnx::AttributeProto -> attributes.h::AttributeValue
     graph_engine::AttributeValue parse_attribute(const onnx::AttributeProto& attr);
 
