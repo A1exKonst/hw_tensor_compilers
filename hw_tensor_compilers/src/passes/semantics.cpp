@@ -177,7 +177,6 @@ namespace semantics {
 
 			
 			// expect shapes:
-			std::cout << "Shape ranks:" << first_val.shape.rank() << " " << second_val.shape.rank() << std::endl;
 			expect(
 				(first_val.shape.rank() == 2 || first_val.shape.rank() == 0) &&
 				(second_val.shape.rank() == 2 || second_val.shape.rank() == 0),
@@ -190,14 +189,13 @@ namespace semantics {
 			unsigned short M = first_val.shape[0];
 			unsigned short N = (first_val.shape[1] > second_val.shape[0]) ? first_val.shape[1] : second_val.shape[0];
 			unsigned short K = second_val.shape[1];
-			std::cout << "Shapes:" << first_val.shape << " " << second_val.shape << std::endl;
+
 			expect(first_val.shape[1] == 0 || first_val.shape[1] == N,
 				"Values for Gemm : cannot multiply matrices");
 			expect(second_val.shape[0] == 0 || second_val.shape[0] == N,
 				"Values for Gemm : cannot multiply matrices");
 			first_val.shape[1] = N;
 			second_val.shape[0] = N;
-			std::cout << third_val.shape << " " << M << " " << K;
 			expect(
 				((third_val.shape[0] == 0 || third_val.shape[0] == M) &&
 				(third_val.shape[1] == 0 || third_val.shape[1] == K)) ||

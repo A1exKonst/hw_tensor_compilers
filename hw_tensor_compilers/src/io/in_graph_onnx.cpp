@@ -72,11 +72,6 @@ auto io::import_from_model(const onnx::ModelProto& model) -> Graph {
             }
         };
 
-        std::cout << initializer.has_raw_data() << " "
-            << initializer.data_type() << " "
-            //<< initializer.raw_data() 
-            << std::endl;
-
         Shape shape;
         shape.rank(initializer.dims().size());
         for (int i = 0; i < initializer.dims().size(); ++i) { shape[i] = initializer.dims().at(i); };

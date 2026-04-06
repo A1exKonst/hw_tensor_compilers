@@ -1,10 +1,35 @@
 #include "passes/mlir_converter.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/Tensor/IR/Tensor.h"
 
 using namespace graph_engine;
-
 using namespace passes;
+using LinalgRegionBuilder = std::function<void(mlir::OpBuilder&, mlir::Location, mlir::ValueRange)>;
 
+
+
+
+
+auto GraphToMLIRConverter::convert() -> mlir::OwningOpRef<mlir::ModuleOp> {
+    auto loc = builder.getUnknownLoc();
+
+    mlir::ModuleOp module = mlir::ModuleOp::create(loc);
+    builder.setInsertionPointToStart(module.getBody());
+
+    mlir::FunctionType funcType = get_function_type(builder, graph);
+    auto funcOp = builder.create<mlir::func::FuncOp>(loc, "main", funcType);
+    mlir::Block* entryBlock = funcOp.addEntryBlock();
+    builder.setInsertionPointToStart(entryBlock);
+
+    // === void convert_graph_nodes() :
+
+    // todo: add graph.nodes visit
+    // via convert_value_to_mlir_value
+
+
+
+    return mlir::OwningOpRef<mlir::ModuleOp>(module);
+};
 
 auto GraphToMLIRConverter::datatype_to_mlir_type(mlir::OpBuilder& builder, graph_engine::DataType dtype) -> mlir::Type {
     mlir::Type return_type;
@@ -19,7 +44,7 @@ auto GraphToMLIRConverter::datatype_to_mlir_type(mlir::OpBuilder& builder, graph
         return_type = builder.getI64Type();
         break;
     default:
-        throw std::runtime_error("Invalid Datatype encountered when converting to mlir");
+        throw std::runtime_error("Conversion to MLIR: Invalid graph_engine::DataType encountered");
     }
     return return_type;
 }
@@ -65,7 +90,8 @@ mlir::Value GraphToMLIRConverter::create_binary_operation(NodeID producer) {
     return create_mlir_binary_operation<IntOp, FloatOp>(builder, loc, lhs, rhs);
 };
 
-auto GraphToMLIRConverter::convert_value_to_mlir_value(graph_engine::ValueID value) -> mlir::Value {
+auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value {
+
     if (value_id_to_mlir_value.find(value) != value_id_to_mlir_value.end()) {
         return value_id_to_mlir_value.at(value);
     }
@@ -76,9 +102,11 @@ auto GraphToMLIRConverter::convert_value_to_mlir_value(graph_engine::ValueID val
 
     mlir::Location loc = mlir::FileLineColLoc::get(builder.getContext(), "graph", producer_node, 0);
 
-    for (ValueID input : graph.nodes[producer_node].inputs) { convert_value_to_mlir_value(input); }
+    for (ValueID input : graph.nodes[producer_node].inputs) { convert_graph_value_to_mlir_recursively(input); }
 
-    switch (graph.nodes[producer_node].op_type) {
+    OperatorType op_type = graph.nodes[producer_node].op_type;
+
+    switch (op_type) {
     case OperatorType::ADD:
         result = create_binary_operation<mlir::arith::AddIOp, mlir::arith::AddFOp>(producer_node);
         break;
@@ -89,20 +117,79 @@ auto GraphToMLIRConverter::convert_value_to_mlir_value(graph_engine::ValueID val
         auto& weights = std::get<std::vector<float>>(graph.nodes[producer_node].attr.at("weights"));
         auto tensor_type = get_value_tensor_type(builder, graph, value);
         auto weights_attr = mlir::DenseElementsAttr::get(tensor_type, llvm::ArrayRef(weights));
-
         auto constant_op = builder.create<mlir::arith::ConstantOp>(loc, tensor_type, weights_attr);
-
         result = constant_op.getResult();
         break;
     }
-    case OperatorType::RELU:
-    case OperatorType::MATMUL:
-    case OperatorType::GEMM:
-    case OperatorType::CONV:
-    default:
-        throw std::runtime_error("mlir conversion for this operation is not supported");
+    case OperatorType::RELU: {
+        mlir::Value input = value_id_to_mlir_value[graph.nodes[producer_node].inputs[0]];
+        mlir::Type elementType = mlir::cast<mlir::ShapedType>(input.getType()).getElementType();
+
+        // ==== create zero tensor (for comparison in relu):
+
+        mlir::TypedAttr zero_attr;
+        if (elementType.isa<mlir::FloatType>()) {
+            zero_attr = builder.getFloatAttr(elementType, 0.0);
+        }
+        else {
+            zero_attr = builder.getIntegerAttr(elementType, 0);
+        }
+        mlir::Value zero = builder.create<mlir::arith::ConstantOp>(loc, zero_attr);
+
+        mlir::Value output = builder.create<mlir::tensor::EmptyOp>(
+            loc, mlir::cast<mlir::RankedTensorType>(input.getType()).getShape(), elementType);
+
+        // ==== create elementwise operation map:
+        int64_t rank = mlir::cast<mlir::RankedTensorType>(input.getType()).getRank();
+        mlir::AffineMap map = builder.getMultiDimIdentityMap(rank); // elementwise operation -> maps are identical
+        llvm::SmallVector<mlir::AffineMap> maps = { map, map };     // 2 maps : for input + output
+
+        // ==== create elementwise iterators:
+        // an iterator is required for each dim, {rank} iterators total
+        // element operations are independent -> iterators are parallel
+        llvm::SmallVector<mlir::utils::IteratorType> iterators(rank, mlir::utils::IteratorType::parallel);
+
+        // ==== choose arith::Max operation:
+        LinalgRegionBuilder lambda_arith_max;
+        if (elementType.isa<mlir::FloatType>()) {
+            lambda_arith_max = [&](mlir::OpBuilder& b, mlir::Location l, mlir::ValueRange args) {
+                auto max = b.create<mlir::arith::MaximumFOp>(l, args[0], zero);  // args[0] - input element
+                b.create<mlir::linalg::YieldOp>(l, max.getResult());             // args[1] - output element
+                };
+        }
+        else {
+            lambda_arith_max = [&](mlir::OpBuilder& b, mlir::Location l, mlir::ValueRange args) {
+                auto max = b.create<mlir::arith::MaxSIOp>(l, args[0], zero);
+                b.create<mlir::linalg::YieldOp>(l, max.getResult());
+                };
+        }
+
+        // ==== create RELU (linalg.generic)
+        mlir::linalg::GenericOp relu_op;
+        relu_op = builder.create<mlir::linalg::GenericOp>(
+            loc,                // location 
+            input.getType(),    // result type
+            input,              // relu input
+            output,             // relu output
+            maps,               // elementwise operation maps
+            iterators,          // elementwise operation iterators
+            lambda_arith_max);  // operation
+
+        result = relu_op.getResult(0);
         break;
     }
+    case OperatorType::GEMM:
+    case OperatorType::MATMUL:
+    case OperatorType::CONV:
+    default:
+        throw std::runtime_error(
+            "mlir conversion for this operation is not supported" + 
+            operator_type_to_str.at(op_type));
+        break;
+    }
+
+    // assert result type is same, as given in graph_engine::Value::dtype :
+    if (result.getType() != get_value_tensor_type(builder, graph, value)) { throw std::runtime_error("Conversion to MLIR: expected another mlir::Type for graph_engine::Value " + std::to_string(value)); };
 
     value_id_to_mlir_value[value] = result;
     return result;

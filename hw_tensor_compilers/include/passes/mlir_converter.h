@@ -25,30 +25,9 @@ namespace passes {
             context(context_), builder(&context), graph(graph_) {
         };
 
-        mlir::OwningOpRef<mlir::ModuleOp> convert() {
-            auto loc = builder.getUnknownLoc();
+        auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
 
-            mlir::ModuleOp module = mlir::ModuleOp::create(loc);
-            builder.setInsertionPointToStart(module.getBody());
-
-            mlir::FunctionType funcType = get_function_type(builder, graph);
-            auto funcOp = builder.create<mlir::func::FuncOp>(loc, "main", funcType);
-            mlir::Block* entryBlock = funcOp.addEntryBlock();
-            builder.setInsertionPointToStart(entryBlock);
-
-            // === void convert_graph_nodes() :
-
-            // todo: add graph.nodes visit
-            // OperatorType::CONSTANT -> arith::ConstantOp
-            // OperatorType::ADD -> arith::AddFOp, arith::AddIOp
-            // OperatorType::MUL -> arith::MulFOp, arith::MulIOp
-
-
-
-            return mlir::OwningOpRef<mlir::ModuleOp>(module);
-        };
-
-        auto convert_value_to_mlir_value(graph_engine::NodeID node) -> mlir::Value;
+        auto convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value;
 
         template <typename IntOp, typename FloatOp>
         auto create_binary_operation(graph_engine::NodeID producer)->mlir::Value;

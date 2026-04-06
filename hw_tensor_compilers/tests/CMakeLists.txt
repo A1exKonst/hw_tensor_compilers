@@ -14,4 +14,6 @@ target_link_libraries(my_tests
     GTest::gtest_main
 )
 
-gtest_discover_tests(my_tests)
+gtest_discover_tests(my_tests
+    DISCOVERY_TIMEOUT 30
+)
