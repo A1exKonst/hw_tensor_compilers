@@ -73,8 +73,8 @@ auto GraphToMLIRConverter::get_function_type(mlir::OpBuilder& builder, const gra
 
 template <typename IntOp, typename FloatOp>
 mlir::Value create_mlir_binary_operation(
-    mlir::OpBuilder& builder, mlir::Location loc,
-    mlir::Value lhs, mlir::Value rhs) {
+    mlir::Value lhs, mlir::Value rhs,
+    mlir::OpBuilder& builder, mlir::Location loc) {
     if (lhs.getType().isa<mlir::FloatType>()) {
         return builder.create<FloatOp>(loc, lhs, rhs).getResult();
     }
@@ -84,14 +84,15 @@ mlir::Value create_mlir_binary_operation(
 template <typename IntOp, typename FloatOp>
 mlir::Value GraphToMLIRConverter::create_binary_operation(NodeID producer) {
     mlir::Location loc = mlir::FileLineColLoc::get(builder.getContext(), "graph", producer, 0);
-    mlir::Value lhs = value_id_to_mlir_value[graph.nodes[producer].inputs[0]];
-    mlir::Value rhs = value_id_to_mlir_value[graph.nodes[producer].inputs[1]];
+    mlir::Value lhs = convert_graph_value_to_mlir_recursively(graph.nodes[producer].inputs[0]);
+    mlir::Value rhs = convert_graph_value_to_mlir_recursively(graph.nodes[producer].inputs[1]);
 
-    return create_mlir_binary_operation<IntOp, FloatOp>(builder, loc, lhs, rhs);
+    return create_mlir_binary_operation<IntOp, FloatOp>(lhs, rhs, builder, loc);
 };
 
 auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value {
 
+    // check if already done when recurringly call conversion
     if (value_id_to_mlir_value.find(value) != value_id_to_mlir_value.end()) {
         return value_id_to_mlir_value.at(value);
     }
@@ -102,17 +103,19 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
 
     mlir::Location loc = mlir::FileLineColLoc::get(builder.getContext(), "graph", producer_node, 0);
 
-    for (ValueID input : graph.nodes[producer_node].inputs) { convert_graph_value_to_mlir_recursively(input); }
+    // ==== get result depending on operation:
 
     OperatorType op_type = graph.nodes[producer_node].op_type;
 
     switch (op_type) {
-    case OperatorType::ADD:
+    case OperatorType::ADD:{
         result = create_binary_operation<mlir::arith::AddIOp, mlir::arith::AddFOp>(producer_node);
         break;
-    case OperatorType::MUL:
+    }
+    case OperatorType::MUL: {
         result = create_binary_operation<mlir::arith::MulIOp, mlir::arith::MulFOp>(producer_node);
         break;
+    }
     case OperatorType::CONSTANT:{
         auto& weights = std::get<std::vector<float>>(graph.nodes[producer_node].attr.at("weights"));
         auto tensor_type = get_value_tensor_type(builder, graph, value);
@@ -122,7 +125,7 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
         break;
     }
     case OperatorType::RELU: {
-        mlir::Value input = value_id_to_mlir_value[graph.nodes[producer_node].inputs[0]];
+        mlir::Value input = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[0]);
         mlir::Type elementType = mlir::cast<mlir::ShapedType>(input.getType()).getElementType();
 
         // ==== create zero tensor (for comparison in relu):
@@ -178,7 +181,25 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
         result = relu_op.getResult(0);
         break;
     }
-    case OperatorType::GEMM:
+    case OperatorType::GEMM: {
+        // Operation: result = alpha*A @ B + C;
+
+        mlir::Value input_A = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[0]);
+        mlir::Value input_B = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[1]);
+        mlir::Value input_C = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[2]);
+
+        bool transB = bool(std::get<int64_t>(graph.nodes[producer_node].attr.at("transB")));
+        float alpha = std::get<float>(graph.nodes[producer_node].attr.at("alpha"));
+        float beta = std::get<float>(graph.nodes[producer_node].attr.at("beta"));
+
+        mlir::Value matmul_result = matmul(input_A, input_B, builder, loc, transB);
+        mlir::Value alpha_result = scalar_mul(matmul_result, alpha, builder, loc);
+        mlir::Value beta_result = scalar_mul(input_C, beta, builder, loc);
+
+        // elementwise add:
+        result = create_mlir_binary_operation<mlir::arith::AddIOp, mlir::arith::AddFOp>(alpha_result, beta_result, builder, loc);
+        break;
+    }
     case OperatorType::MATMUL:
     case OperatorType::CONV:
     default:
@@ -194,3 +215,53 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
     value_id_to_mlir_value[value] = result;
     return result;
 };
+
+auto passes::matmul(mlir::Value a, mlir::Value b, mlir::OpBuilder& builder, mlir::Location loc, bool transpose_b) -> mlir::Value {
+
+    int64_t M = a.getType().cast<mlir::RankedTensorType>().getDimSize(0);       // A is (M x K)
+    unsigned short N_index = (unsigned short)(!transpose_b);
+    int64_t N = b.getType().cast<mlir::RankedTensorType>().getDimSize(N_index); // B is (K x N)
+
+    mlir::Type elementType = a.getType().cast<mlir::RankedTensorType>().getElementType();
+
+    // Empty tensor for matmul typing : RankedTensor (M x N)
+    mlir::Value matmul_init = builder.create<mlir::tensor::EmptyOp>(
+        loc,
+        mlir::ArrayRef<int64_t>{M, N},
+        elementType
+    );
+    
+    mlir::Operation* matmul_op;
+    if (transpose_b) {
+        matmul_op = builder.create<mlir::linalg::MatmulTransposeBOp>(
+            loc,
+            mlir::TypeRange{ matmul_init.getType() },   //result TensorType
+            mlir::ValueRange{ a, b },                   //inputs
+            mlir::ValueRange{ matmul_init }             //outputs
+        );
+    }
+    else {
+        matmul_op = builder.create<mlir::linalg::MatmulOp>(
+            loc,
+            mlir::TypeRange{ matmul_init.getType() },   //result TensorType
+            mlir::ValueRange{ a, b },                   //inputs
+            mlir::ValueRange{ matmul_init }             //outputs
+        );
+    };
+
+    // because SSA, matmul_init is a start state of output of operation (zeroed tensor), 
+    // and is not a result of matmul
+    mlir::Value matmul_result = matmul_op->getResult(0);
+    return matmul_result;
+};
+
+auto passes::scalar_mul(mlir::Value A, float s, mlir::OpBuilder& builder, mlir::Location loc) -> mlir::Value {
+    mlir::Type type = A.getType().cast<mlir::ShapedType>().getElementType();
+
+    mlir::Value scalar = builder.create<mlir::arith::ConstantFloatOp>(
+        loc, llvm::APFloat(s), type.cast<mlir::FloatType>());
+
+    mlir::arith::MulFOp op = builder.create<mlir::arith::MulFOp>(loc, A, scalar);
+
+    return op.getResult();
+}
