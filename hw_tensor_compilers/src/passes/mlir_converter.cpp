@@ -11,22 +11,44 @@ using LinalgRegionBuilder = std::function<void(mlir::OpBuilder&, mlir::Location,
 
 
 auto GraphToMLIRConverter::convert() -> mlir::OwningOpRef<mlir::ModuleOp> {
+    context.getOrLoadDialect<mlir::func::FuncDialect>();
+    context.getOrLoadDialect<mlir::arith::ArithDialect>();
+    context.getOrLoadDialect<mlir::tensor::TensorDialect>();
+    context.getOrLoadDialect<mlir::linalg::LinalgDialect>();
+
     auto loc = builder.getUnknownLoc();
 
     mlir::ModuleOp module = mlir::ModuleOp::create(loc);
     builder.setInsertionPointToStart(module.getBody());
 
-    mlir::FunctionType funcType = get_function_type(builder, graph);
-    auto funcOp = builder.create<mlir::func::FuncOp>(loc, "main", funcType);
-    mlir::Block* entryBlock = funcOp.addEntryBlock();
-    builder.setInsertionPointToStart(entryBlock);
+    mlir::FunctionType func_type = get_function_type(builder, graph);
+    mlir::func::FuncOp func_op = builder.create<mlir::func::FuncOp>(loc, "main", func_type);
+
+    mlir::Block* entry_block = func_op.addEntryBlock();
+    builder.setInsertionPointToStart(entry_block);
 
     // === void convert_graph_nodes() :
 
     // todo: add graph.nodes visit
     // via convert_value_to_mlir_value
 
+    if (entry_block->getNumArguments() != graph.inputs.size()) {
+        throw std::runtime_error("Conversion to MLIR: Wrong number of inputs in entry_block");
+    }
 
+    for (size_t i = 0; i < entry_block->getNumArguments(); ++i) {
+        value_id_to_mlir_value[graph.inputs[i]] = entry_block->getArgument(i);
+    }
+
+    for (ValueID output : graph.outputs) {
+        convert_graph_value_to_mlir_recursively(output);
+    }
+
+    std::vector<mlir::Value> return_values;
+    for (ValueID output : graph.outputs) {
+        return_values.push_back(value_id_to_mlir_value[output]);
+    }
+    builder.create<mlir::func::ReturnOp>(loc, return_values);
 
     return mlir::OwningOpRef<mlir::ModuleOp>(module);
 };

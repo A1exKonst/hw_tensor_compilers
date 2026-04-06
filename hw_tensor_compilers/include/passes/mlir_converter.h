@@ -20,17 +20,18 @@ namespace passes {
         mlir::OpBuilder builder;
 
         std::unordered_map<graph_engine::ValueID, mlir::Value> value_id_to_mlir_value;
+
+        auto convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value;
+
+        template <typename IntOp, typename FloatOp>
+        auto create_binary_operation(graph_engine::NodeID producer) -> mlir::Value;
+
     public:
         explicit GraphToMLIRConverter(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) :
             context(context_), builder(&context), graph(graph_) {
         };
 
         auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
-
-        auto convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value;
-
-        template <typename IntOp, typename FloatOp>
-        auto create_binary_operation(graph_engine::NodeID producer)->mlir::Value;
 
         static auto datatype_to_mlir_type(mlir::OpBuilder& builder, const graph_engine::DataType dtype) -> mlir::Type;
 
