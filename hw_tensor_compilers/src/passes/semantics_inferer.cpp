@@ -1,4 +1,6 @@
 #include "passes/semantics_inferer.h"
+#include <iostream>
+#include "io/out_graph_console.h"
 
 using namespace graph_engine;
 
@@ -176,16 +178,19 @@ namespace passes {
 			second_val.shape.rank(2);
 			third_val.shape.rank(2);
 
+			unsigned is_trans_B = std::get<int64_t>(graph.nodes[node_id].attr.at("transB"));
 			unsigned short M = first_val.shape[0];
-			unsigned short N = (first_val.shape[1] > second_val.shape[0]) ? first_val.shape[1] : second_val.shape[0];
+			unsigned short N = (first_val.shape[1] > second_val.shape[0 + is_trans_B]) ? 
+				first_val.shape[1] : second_val.shape[0 + is_trans_B];
 			unsigned short K = second_val.shape[1];
 
-			expect(first_val.shape[1] == 0 || first_val.shape[1] == N,
+			expect(first_val.shape[1] == N,
 				"Values for Gemm : cannot multiply matrices");
-			expect(second_val.shape[0] == 0 || second_val.shape[0] == N,
+			expect(second_val.shape[0 + is_trans_B] == N,
 				"Values for Gemm : cannot multiply matrices");
-			first_val.shape[1] = N;
-			second_val.shape[0] = N;
+			//std::cout << first_val << std::endl;
+			//std::cout << second_val << std::endl;
+			//std::cout << third_val << std::endl;
 			expect(
 				((third_val.shape[0] == 0 || third_val.shape[0] == M) &&
 					(third_val.shape[1] == 0 || third_val.shape[1] == K)) ||
@@ -316,5 +321,8 @@ namespace passes {
 		graph.nodes[conversion_node_id].inputs.push_back(new_value_id);
 		return;
 	};
-
+	
+	// std::optional<Shape> is_broadcastible(const Shape& s1, const Shape& s2)
+	// bool is_multiplicable
+	// Shape reduced_shape
 }
