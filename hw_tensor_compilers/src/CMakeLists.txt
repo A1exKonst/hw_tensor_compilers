@@ -4,14 +4,12 @@ add_library(tensor_compiler_lib STATIC
     "graph/shape.cpp" 
     "graph/graph.cpp"
 
-    "passes/semantics.cpp" 
+#    "passes/semantics.cpp"
+    "passes/semantics_inferer.cpp"
     "passes/mlir_converter.cpp"
 
     "io/in_graph_onnx.cpp"
     "io/out_graph_console.cpp"
-
-    "mlir_handler.cpp"
-    "mlir_handler.h"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}

@@ -1,26 +1,16 @@
-#pragma once
-#include "passes/semantics.h"
-
-#include <utility>
-#include <type_traits>
-#include <algorithm>
-
-#include "graph/graph.h"
-#include "io/out_graph_console.h"
+#include "passes/semantics_inferer.h"
 
 using namespace graph_engine;
 
-namespace semantics {
+namespace passes {
 
-	void expect(bool asserted_value, std::string exception_name);
-
-	void decorate_graph(Graph& graph) {
+	void SemanticsInferer::transform_graph(Graph& graph) {
 		for (NodeID node_id = 0; node_id < graph.nodes.size(); ++node_id) {
-			decorate_graph(graph, node_id);
+			transform_node(graph, node_id);
 		};
 	};
 
-	void decorate_graph(Graph& graph, NodeID node_id) {
+	void SemanticsInferer::transform_node(Graph& graph, const NodeID node_id) {
 		Node& node = graph.nodes.at(node_id);
 		switch (node.op_type) {
 		case OperatorType::ADD:
@@ -40,7 +30,7 @@ namespace semantics {
 			expect_dtype(graph, out, result_type);
 
 			std::optional<Shape> result_shape = graph_engine::calculate_broadcast_compatible_shape(
-				graph.values[first].shape, 
+				graph.values[first].shape,
 				graph.values[second].shape);
 			expect(result_shape.has_value(), "Node[Add || Mul] : couldn't broadcast shapes");
 			expect_shape(graph, first, result_shape.value());
@@ -48,7 +38,7 @@ namespace semantics {
 			expect_shape(graph, out, std::move(result_shape.value()));
 			break;
 		}
-		case OperatorType::CONSTANT:{
+		case OperatorType::CONSTANT: {
 			expect(node.outputs.size() == 1, "Node[Constant] : one output Value is expected");
 			break;
 		}
@@ -56,8 +46,8 @@ namespace semantics {
 			using AttrSeq = std::vector<int64_t>;
 
 			size_t inputs_size = node.inputs.size();
-			expect((inputs_size == 2 || inputs_size == 3),	"Node[Conv] : 2 or 3 input Values are expected");
-			expect(node.outputs.size() == 1,				"Node[Conv] : one output Value is expected");
+			expect((inputs_size == 2 || inputs_size == 3), "Node[Conv] : 2 or 3 input Values are expected");
+			expect(node.outputs.size() == 1, "Node[Conv] : one output Value is expected");
 
 			ValueID x_id = node.inputs[0];
 			ValueID w_id = node.inputs[1];
@@ -75,13 +65,13 @@ namespace semantics {
 			expect_dtype(graph, w_id, result_type);
 			expect_dtype(graph, y_id, result_type);
 			if (is_b_initialized) expect_dtype(graph, b_id, result_type);
-			
+
 
 			// =========================== Shape Inference =====================================================
 
 			Shape y_shape(graph.values[x_id].shape.rank());
-			expect(graph.values[x_id].shape.rank() >= 3,						"Node[Conv] : X.rank() < 3");
-			expect(graph.values[x_id].shape.rank() == graph.values[w_id].shape.rank(),		"Node[Conv] : rank(X) != rank(W)");
+			expect(graph.values[x_id].shape.rank() >= 3, "Node[Conv] : X.rank() < 3");
+			expect(graph.values[x_id].shape.rank() == graph.values[w_id].shape.rank(), "Node[Conv] : rank(X) != rank(W)");
 
 			auto rank = graph.values[x_id].shape.rank();
 			auto spatial_rank = rank - 2;
@@ -91,7 +81,7 @@ namespace semantics {
 
 			// set default attributes:
 			int64_t group = 1;
-			AttrSeq pads(spatial_rank*2, 2);
+			AttrSeq pads(spatial_rank * 2, 2);
 			AttrSeq kernel_shape(graph.values[w_id].shape.begin() + 2, graph.values[w_id].shape.end());
 			AttrSeq strides(spatial_rank, 1);
 			AttrSeq dilations(spatial_rank, 1);
@@ -107,18 +97,18 @@ namespace semantics {
 
 			// expect attributes validity:
 			expect((group > 0 && C % group == 0 && M % group == 0), "Node[Conv] : invalid \"group\" value");
-			expect(strides.size() == spatial_rank,			"Node[Conv] : strides.size() != spatial_rank");
-			for (int64_t s : strides) expect(s > 0,			"Node[Conv] : strides[i] <= 0");
-			expect(dilations.size() == spatial_rank,		"Node[Conv] : dilations.size() != spatial_rank");
-			for (int64_t d : dilations) expect(d >= 1,		"Node[Conv] : dilations[i] < 1");
-			expect((kernel_shape.size() == spatial_rank),	"Node[Conv] : kernel_shape.size() != spatial_rank");
+			expect(strides.size() == spatial_rank, "Node[Conv] : strides.size() != spatial_rank");
+			for (int64_t s : strides) expect(s > 0, "Node[Conv] : strides[i] <= 0");
+			expect(dilations.size() == spatial_rank, "Node[Conv] : dilations.size() != spatial_rank");
+			for (int64_t d : dilations) expect(d >= 1, "Node[Conv] : dilations[i] < 1");
+			expect((kernel_shape.size() == spatial_rank), "Node[Conv] : kernel_shape.size() != spatial_rank");
 			for (int i = 0; i < kernel_shape.size(); ++i) {
-				expect(graph.values[w_id].shape[i + 2] == kernel_shape[i],	"Node[Conv] : kernel_shape != W[2:]");
+				expect(graph.values[w_id].shape[i + 2] == kernel_shape[i], "Node[Conv] : kernel_shape != W[2:]");
 			};
-			expect(graph.values[x_id].shape[1] / group == graph.values[w_id].shape[1],		"Node[Conv] : W[1] != C / group");
+			expect(graph.values[x_id].shape[1] / group == graph.values[w_id].shape[1], "Node[Conv] : W[1] != C / group");
 			if (is_b_initialized) {
-				expect(graph.values[b_id].shape.rank() == 1,						"Node[Conv] : B.rank != 1");
-				expect(graph.values[b_id].shape[0] == graph.values[w_id].shape[0],	"Node[Conv] : B.shape[0] != M");
+				expect(graph.values[b_id].shape.rank() == 1, "Node[Conv] : B.rank != 1");
+				expect(graph.values[b_id].shape[0] == graph.values[w_id].shape[0], "Node[Conv] : B.shape[0] != M");
 			};
 
 			// form Y shape:
@@ -150,15 +140,15 @@ namespace semantics {
 		}
 		case OperatorType::GEMM: {
 			// expect input output arguments amount:
-			expect(node.outputs.size() == 1,"Node[Gemm] : one output Value is expected");
-			expect(node.inputs.size() == 3,	"Node[Gemm] : 3 input Values are expected");
+			expect(node.outputs.size() == 1, "Node[Gemm] : one output Value is expected");
+			expect(node.inputs.size() == 3, "Node[Gemm] : 3 input Values are expected");
 
 
 			// expect dtypes:
-			ValueID out		= node.outputs.at(0);
-			ValueID first	= node.inputs.at(0);
-			ValueID second	= node.inputs.at(1);
-			ValueID third	= node.inputs.at(2);
+			ValueID out = node.outputs.at(0);
+			ValueID first = node.inputs.at(0);
+			ValueID second = node.inputs.at(1);
+			ValueID third = node.inputs.at(2);
 
 			Value& first_val = graph.values.at(first);
 			Value& second_val = graph.values.at(second);
@@ -175,7 +165,7 @@ namespace semantics {
 			expect_dtype(graph, third, result_type);
 			expect_dtype(graph, out, result_type);
 
-			
+
 			// expect shapes:
 			expect(
 				(first_val.shape.rank() == 2 || first_val.shape.rank() == 0) &&
@@ -198,9 +188,9 @@ namespace semantics {
 			second_val.shape[0] = N;
 			expect(
 				((third_val.shape[0] == 0 || third_val.shape[0] == M) &&
-				(third_val.shape[1] == 0 || third_val.shape[1] == K)) ||
+					(third_val.shape[1] == 0 || third_val.shape[1] == K)) ||
 				((third_val.shape[1] == 0 || third_val.shape[1] == M) &&
-				(third_val.shape[0] == 0 || third_val.shape[0] == K)),
+					(third_val.shape[0] == 0 || third_val.shape[0] == K)),
 				"Values for Gemm : cannot add matrices");
 			third_val.shape[0] = M;
 			third_val.shape[1] = K;
@@ -208,14 +198,14 @@ namespace semantics {
 			expect_shape(graph, out, third_val.shape);
 			break;
 		}
-		case OperatorType::INPUT:{
+		case OperatorType::INPUT: {
 			expect(false, "Node[Input] : not supported");
 			break;
 		}
 		case OperatorType::MATMUL: {
-			expect(node.outputs.size() == 1, 
+			expect(node.outputs.size() == 1,
 				"Node[Gemm] : one output Value is expected");
-			expect(node.inputs.size() == 2, 
+			expect(node.inputs.size() == 2,
 				"Node[Gemm] : 3 input Values are expected");
 
 			ValueID out = node.outputs.at(0);
@@ -223,14 +213,14 @@ namespace semantics {
 			ValueID second = node.inputs.at(1);
 
 			// expect dtypes:
-			DataType result_type = graph_engine::math_result_data_type(graph.values.at(first).dtype,graph.values.at(second).dtype);
+			DataType result_type = graph_engine::math_result_data_type(graph.values.at(first).dtype, graph.values.at(second).dtype);
 			expect_dtype(graph, first, result_type);
 			expect_dtype(graph, second, result_type);
 			expect_dtype(graph, out, result_type);
 
 			// expect shapes:
 			auto result_rank = graph.values[first].shape.rank();
-			expect(result_rank == graph.values[second].shape.rank(), 
+			expect(result_rank == graph.values[second].shape.rank(),
 				"Node[MatMul] : equal ranks of input Values are expected");
 
 			Shape result_shape = Shape(result_rank);
@@ -253,7 +243,7 @@ namespace semantics {
 		}
 		case OperatorType::RELU: {
 			expect(node.outputs.size() == 1, "Node[Relu] : one output Value is expected");
-			expect(node.inputs.size() == 1,  "Node[Relu] : one input Value is expected");
+			expect(node.inputs.size() == 1, "Node[Relu] : one input Value is expected");
 			expect_dtype(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).dtype); // expect equal dtypes
 			expect_shape(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).shape); // expect equal shapes
 			break;
@@ -265,14 +255,7 @@ namespace semantics {
 		};
 	};
 
-	void expect(bool asserted_value, std::string exception_name) {
-		if (!asserted_value) {
-			throw std::runtime_error(std::move(exception_name));
-		};
-		return;
-	};
-
-	void expect_dtype(Graph& graph, ValueID value_id, DataType dtype) {
+	void SemanticsInferer::expect_dtype(Graph& graph, const ValueID value_id, const DataType dtype) {
 		if (graph.values[value_id].dtype == dtype) return;
 
 		if (graph.values[value_id].dtype != DataType::UNDEFINED) {
@@ -285,7 +268,38 @@ namespace semantics {
 		return;
 	};
 
-	void insert_type_conversion(Graph& graph, ValueID converted_value_id, DataType new_dtype) {
+	void SemanticsInferer::expect_shape(Graph& graph, const ValueID value_id, Shape shape) {
+		if (graph.values[value_id].shape == shape) return;
+
+		if (graph.values[value_id].shape.rank() != 0) {
+			throw std::runtime_error("V" + std::to_string(value_id)
+				+ ": tried to initialize Shape, when it is already initialized");
+		};
+
+		graph.values[value_id].shape = std::move(shape);
+		return;
+	};
+
+	void SemanticsInferer::expect(bool assertion, std::string&& error_message) {
+		if (!assertion) {
+			throw std::runtime_error(std::move(error_message));
+		};
+		return;
+	};
+
+	void SemanticsInferer::expect_attribute(Graph& graph, NodeID node_id, const std::string& name, AttributeValue attr) {
+		if (graph.nodes.at(node_id).attr.at(name) == attr) return;
+
+		Node& node = graph.nodes[node_id];
+		if (node.attr.find(name) != node.attr.end()) {
+			throw std::runtime_error("N" + std::to_string(node_id) +
+				": tried to initialize attribute '" + name + "', when it is already initialized");
+		};
+		node.attr[name] = std::move(attr);
+		return;
+	};
+
+	void SemanticsInferer::insert_type_conversion(Graph& graph, ValueID converted_value_id, DataType new_dtype) {
 		size_t new_value_expected_id = graph.nodes.size();
 		NodeID conversion_node_id = graph.add_node(
 			OperatorType::DTYPE_CONVERSION,		// OperatorType
@@ -303,28 +317,4 @@ namespace semantics {
 		return;
 	};
 
-	void expect_shape(Graph& graph, ValueID value_id, Shape shape) {
-		if (graph.values[value_id].shape == shape) return;
-
-		if (graph.values[value_id].shape.rank() != 0) {
-			throw std::runtime_error("V" + std::to_string(value_id)
-				+ ": tried to initialize Shape, when it is already initialized");
-		};
-
-		graph.values[value_id].shape = std::move(shape);
-		return;
-	};
-
-	void expect_attribute(Graph& graph, NodeID node_id, const std::string& name, AttributeValue attr) {
-		if (graph.nodes.at(node_id).attr.at(name) == attr) return;
-
-		Node& node = graph.nodes[node_id];
-		if (node.attr.find(name) != node.attr.end()) {
-			throw std::runtime_error("N" + std::to_string(node_id) + 
-				": tried to initialize attribute '" + name + "', when it is already initialized");
-		};
-		node.attr[name] = std::move(attr);
-		return;
-	};
-
-};
+}
