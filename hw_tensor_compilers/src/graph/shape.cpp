@@ -77,11 +77,21 @@ namespace graph_engine {
         // Broadcast upper dims:
         std::optional<Shape> broadcast = calculate_broadcast_compatible_shape(s1, s2, 2);
         if (!broadcast.has_value()) return std::nullopt;
-        std::cout << "broadcast:" << broadcast.value();
+
         // Matmul op transforms:
         Shape result = broadcast.value();
         result[0] = s2[0];
         result[1] = s1[1];
+        return result;
+    };
+
+    Shape transposed(const Shape& s, unsigned short axis_1, unsigned short axis_2) {
+        Shape result{ s };
+
+        int64_t k = std::move(result[axis_1]);
+        result[axis_1] = std::move(result[axis_2]);
+        result[axis_2] = std::move(k);
+
         return result;
     };
 };
