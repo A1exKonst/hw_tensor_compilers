@@ -198,7 +198,7 @@ TEST(OnnxImport, SingleConvModel) {
 };
 
 TEST(OnnxImport, SingleGemmModel) {
-    std::string filename = "data/single_gemm_incorrect_shapes.onnx";
+    std::string filename = "data/single_gemm.onnx";
     graph_engine::Graph graph = io::import_from_model(filename);
 
     ASSERT_EQ(graph.nodes.size(), 3);

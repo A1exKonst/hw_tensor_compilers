@@ -226,7 +226,7 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
     case OperatorType::CONV:
     default:
         throw std::runtime_error(
-            "mlir conversion for this operation is not supported" + 
+            "mlir conversion for this operation is not supported: " + 
             operator_type_to_str.at(op_type));
         break;
     }

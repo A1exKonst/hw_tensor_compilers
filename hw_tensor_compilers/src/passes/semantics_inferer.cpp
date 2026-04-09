@@ -1,4 +1,6 @@
 #include "passes/semantics_inferer.h"
+#include <iostream>
+#include "io/out_graph_console.h"
 
 using namespace graph_engine;
 
@@ -167,15 +169,26 @@ namespace passes {
 
 
 			// expect shapes:
-			expect(
-				(first_val.shape.rank() == 2 || first_val.shape.rank() == 0) &&
-				(second_val.shape.rank() == 2 || second_val.shape.rank() == 0),
+			expect(first_val.shape.rank() == 2 && second_val.shape.rank() == 2,
 				"Values for Gemm : only rank == 2 allowed");
 
 			first_val.shape.rank(2);
 			second_val.shape.rank(2);
-			third_val.shape.rank(2);
 
+			int64_t is_transposed_B = std::get<int64_t>(graph.nodes[node_id].attr.at("transB"));
+			std::optional<Shape> matmul_shape;
+			if (!is_transposed_B) {
+				matmul_shape = graph_engine::calculate_matmul_compatible_shape(first_val.shape, second_val.shape);
+			}
+			else {
+				matmul_shape = graph_engine::calculate_matmul_compatible_shape(first_val.shape, transposed(second_val.shape));
+			}
+			expect(matmul_shape.has_value(), "Values for Gemm : cannot multiply matrices");
+
+			std::optional<Shape> gemm_shape = graph_engine::calculate_broadcast_compatible_shape(matmul_shape.value(), third_val.shape);
+			expect(gemm_shape.has_value(), "Values for Gemm : cannot add matrices");
+			expect_shape(graph, out, gemm_shape.value());
+			/*
 			unsigned short M = first_val.shape[0];
 			unsigned short N = (first_val.shape[1] > second_val.shape[0]) ? first_val.shape[1] : second_val.shape[0];
 			unsigned short K = second_val.shape[1];
@@ -194,8 +207,8 @@ namespace passes {
 				"Values for Gemm : cannot add matrices");
 			third_val.shape[0] = M;
 			third_val.shape[1] = K;
-
 			expect_shape(graph, out, third_val.shape);
+			*/
 			break;
 		}
 		case OperatorType::INPUT: {
@@ -272,6 +285,9 @@ namespace passes {
 		if (graph.values[value_id].shape == shape) return;
 
 		if (graph.values[value_id].shape.rank() != 0) {
+			std::cout << "V" << value_id <<".Shape:        " << graph.values[value_id].shape << std::endl;
+			std::cout << "Expected Shape: " << shape << std::endl;
+
 			throw std::runtime_error("V" + std::to_string(value_id)
 				+ ": tried to initialize Shape, when it is already initialized");
 		};

@@ -152,9 +152,22 @@ TEST(GraphShape, ShapeBroadcasting_10) {
     /*       */s2[0] = 3; s2[1] = 1;  s2[2] = 1;
     result = graph_engine::calculate_broadcast_compatible_shape(s1, s2);
 
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result.value(), ::testing::ElementsAre(8, 3, 64, 64));
 };
+
+TEST(GraphShape, ShapeBroadcastingVector) {
+    graph_engine::Shape s1 = graph_engine::Shape(2);
+    graph_engine::Shape s2 = graph_engine::Shape(1);
+    std::optional<graph_engine::Shape> result;
+
+    s1[0] = 1; s1[1] = 20;
+    /*       */s2[0] = 20;
+    result = graph_engine::calculate_broadcast_compatible_shape(s1, s2);
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_THAT(result.value(), ::testing::ElementsAre(1,20));
+}
 
 TEST(GraphShape, ShapePartialBroadcasting_1) {
     graph_engine::Shape s1 = graph_engine::Shape(4);

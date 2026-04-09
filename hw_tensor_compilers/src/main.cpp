@@ -21,7 +21,7 @@ int main() {
 		std::string version = "0.1.98";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_mul.onnx";
+		std::string filename = "data/single_gemm.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
 		std::cout << graph << std::endl;
 

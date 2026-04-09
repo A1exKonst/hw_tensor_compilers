@@ -6,6 +6,7 @@ add_executable(my_tests
     "test_shape.cpp" 
     "test_onnx_import.cpp"
     "test_semantics.cpp"
+    "test_mlir.cpp"
 )
 
 target_link_libraries(my_tests 
