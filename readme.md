@@ -3,6 +3,7 @@
 Requirements:
 1. Наличие пакета protobuf (для компиляции onnx.proto).
 2. Наличие пакета gtest.
+3. Наличие пакетов llvm[core, mlir]
 
 
 Отчет:
