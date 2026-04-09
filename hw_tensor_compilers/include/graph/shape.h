@@ -53,6 +53,4 @@ namespace graph_engine {
     std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank = 0);
 
     std::optional<Shape> calculate_matmul_compatible_shape(const Shape& s1, const Shape& s2);
-
-    Shape transposed(const Shape& s, unsigned short axis_1 = 0, unsigned short axis_2 = 1);
 };

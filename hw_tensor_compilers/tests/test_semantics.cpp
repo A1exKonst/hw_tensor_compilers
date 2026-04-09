@@ -50,7 +50,7 @@ TEST(Semantics, SingleGemmModelInvalidAddition) {
     
     EXPECT_THAT([&graph]() { passes::SemanticsInferer::transform_graph(graph); },
         ::testing::ThrowsMessage<std::runtime_error>(
-            ::testing::HasSubstr("Values for Gemm : cannot multiply matrices")
+            ::testing::HasSubstr("Values for Gemm : cannot add matrices")
         )
     );
 };
