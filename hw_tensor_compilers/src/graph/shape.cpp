@@ -1,6 +1,5 @@
 #pragma once
 #include "graph/shape.h"
-#include "io/out_graph_console.h"
 
 #include <cassert>
 #include <exception>
@@ -44,7 +43,7 @@ namespace graph_engine {
         return true;
     };
 
-    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank) {
+    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2) {
 
         unsigned min_rank = (s1.rank() < s2.rank()) ? s1.rank() : s2.rank();
         unsigned max_rank = (s1.rank() > s2.rank()) ? s1.rank() : s2.rank();
@@ -52,36 +51,20 @@ namespace graph_engine {
 
         Shape result = Shape(max_rank);
 
-        // compare shape in lower dims:
-        for (int i = start_rank; i < min_rank; ++i) {
-            auto first_dim = s1[i];
-            auto second_dim = s2[i];
+        for (int i = 1; i < min_rank + 1; ++i) {
+            auto first_dim = s1[s1.rank() - i];
+            auto second_dim = s2[s2.rank() - i];
             bool is_compatible = ((first_dim == second_dim) ||
                 (first_dim == 1) ||
                 (second_dim == 1));
             if (!is_compatible) return std::nullopt;
-            result[i] = (first_dim > second_dim) ? first_dim : second_dim;
+            result[max_rank - i] = (first_dim > second_dim) ? first_dim : second_dim;
         }
 
-        // broadcast shape in upper dims:
-        for (int i = std::max(min_rank, start_rank); i < max_rank; ++i) {
+        for (int i = 0; i < max_rank - min_rank; ++i) {
             result[i] = max_rank_shape[i];
         }
-        return result;
-    };
 
-    std::optional<Shape> calculate_matmul_compatible_shape(const Shape& s1, const Shape& s2) {
-        if (s1.rank() < 2 || s2.rank() < 2) return std::nullopt;
-        if (s1[0] != s2[1]) return std::nullopt;
-
-        // Broadcast upper dims:
-        std::optional<Shape> broadcast = calculate_broadcast_compatible_shape(s1, s2, 2);
-        if (!broadcast.has_value()) return std::nullopt;
-        std::cout << "broadcast:" << broadcast.value();
-        // Matmul op transforms:
-        Shape result = broadcast.value();
-        result[0] = s2[0];
-        result[1] = s1[1];
         return result;
     };
 };
