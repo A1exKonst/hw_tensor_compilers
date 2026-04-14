@@ -18,6 +18,11 @@ target_compile_definitions(mlir_deps INTERFACE ${LLVM_DEFINITIONS})
 
 target_link_libraries(mlir_deps INTERFACE 
     MLIRIR
+    MLIRPass
+    MLIRFuncToLLVM
+    MLIRLinalgToStandard
+    MLIRTensorToLinalg
+    MLIRLinalgTransforms
 
     MLIRLinalgDialect
     MLIRTensorDialect

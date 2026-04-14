@@ -74,7 +74,7 @@ auto GraphToMLIRConverter::datatype_to_mlir_type(mlir::OpBuilder& builder, graph
 auto GraphToMLIRConverter::get_value_tensor_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph, ValueID value_id) -> mlir::RankedTensorType {
     mlir::Type dtype = datatype_to_mlir_type(builder, graph.values[value_id].dtype);
     const Shape& s = graph.values[value_id].shape;
-    llvm::ArrayRef<int64_t> shape_slice(&*s.begin(), s.rank());
+    llvm::SmallVector<int64_t, graph_engine::MAX_VALUE_RANK> shape_slice(s.begin(), s.end());
     return mlir::RankedTensorType::get(shape_slice, dtype);
 };
 

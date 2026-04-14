@@ -18,10 +18,10 @@
 int main() {
 
 	try {
-		std::string version = "0.1.98";
+		std::string version = "0.1.105";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_gemm.onnx";
+		std::string filename = "data/tiny.onnx";
 		graph_engine::Graph graph = io::import_from_model(filename);
 		std::cout << graph << std::endl;
 
@@ -30,12 +30,12 @@ int main() {
 		
 		mlir::MLIRContext context;
 		passes::GraphToMLIRConverter converter{ context, graph };
-		mlir::OwningOpRef<mlir::ModuleOp> tiny_model = converter.convert();
+		mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
 
-		std::cout << "Module is " << (mlir::succeeded(tiny_model->verify()) ? "VALID" : "INVALID") << std::endl;
+		std::cout << "Module is " << (mlir::succeeded(model->verify()) ? "VALID" : "INVALID") << std::endl;
 		
-		/*
-		mlir::PassManager pm{tiny_model->getContext()};
+		
+		mlir::PassManager pm{model->getContext()};
 
 		pm.addPass(mlir::createConvertFuncToLLVMPass());
 		pm.addPass(mlir::createConvertControlFlowToLLVMPass());
@@ -45,10 +45,10 @@ int main() {
 		pm.addPass(mlir::createArithToLLVMConversionPass());
 
 		pm.addPass(mlir::createConvertMemRefToSPIRVPass());
-		pm.addPass(mlir::createReconcileUnrealizedCastsPass());
+		//pm.addPass(mlir::createReconcileUnrealizedCastsPass());
 
-		pm.run(*tiny_model);
-		*/
+		// pm.run(*model);
+		
 		std::cout << "exec " << version << std::endl;
 	}
 	catch (std::exception e) {
