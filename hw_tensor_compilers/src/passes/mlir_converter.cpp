@@ -1,6 +1,7 @@
 #include "passes/mlir_converter.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
+#include <iostream>
 
 using namespace graph_engine;
 using namespace passes;
@@ -8,7 +9,11 @@ using LinalgRegionBuilder = std::function<void(mlir::OpBuilder&, mlir::Location,
 
 
 
-
+auto GraphToMLIRConverter::tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp> {
+    GraphToMLIRConverter converter{ context_, graph_ };
+    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    return model;
+};
 
 auto GraphToMLIRConverter::convert() -> mlir::OwningOpRef<mlir::ModuleOp> {
     context.getOrLoadDialect<mlir::func::FuncDialect>();
@@ -97,7 +102,12 @@ template <typename IntOp, typename FloatOp>
 mlir::Value create_mlir_binary_operation(
     mlir::Value lhs, mlir::Value rhs,
     mlir::OpBuilder& builder, mlir::Location loc) {
-    if (lhs.getType().isa<mlir::FloatType>()) {
+
+    mlir::Type type = lhs.getType();
+    if (auto shapedType = type.dyn_cast<mlir::ShapedType>()) {
+        type = shapedType.getElementType();
+    }
+    if (type.isa<mlir::FloatType>()) {
         return builder.create<FloatOp>(loc, lhs, rhs).getResult();
     }
     return builder.create<IntOp>(loc, lhs, rhs).getResult();
@@ -123,7 +133,7 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
 
     NodeID producer_node = graph.values[value].producer_node_id;
 
-    mlir::Location loc = mlir::FileLineColLoc::get(builder.getContext(), "graph", producer_node, 0);
+    mlir::Location loc = mlir::FileLineColLoc::get(builder.getContext(), "graph", producer_node, value);
 
     // ==== get result depending on operation:
 
@@ -213,13 +223,14 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
         bool transB = bool(std::get<int64_t>(graph.nodes[producer_node].attr.at("transB")));
         float alpha = std::get<float>(graph.nodes[producer_node].attr.at("alpha"));
         float beta = std::get<float>(graph.nodes[producer_node].attr.at("beta"));
-
+        std::cout << "mlir gemm 1" << std::endl;
         mlir::Value matmul_result = matmul(input_A, input_B, builder, loc, transB);
         mlir::Value alpha_result = scalar_mul(matmul_result, alpha, builder, loc);
         mlir::Value beta_result = scalar_mul(input_C, beta, builder, loc);
 
         // elementwise add:
         result = create_mlir_binary_operation<mlir::arith::AddIOp, mlir::arith::AddFOp>(alpha_result, beta_result, builder, loc);
+        std::cout << "mlir gemm 2" << std::endl;
         break;
     }
     case OperatorType::MATMUL:
@@ -277,6 +288,7 @@ auto passes::matmul(mlir::Value a, mlir::Value b, mlir::OpBuilder& builder, mlir
     return matmul_result;
 };
 
+/*
 auto passes::scalar_mul(mlir::Value A, float s, mlir::OpBuilder& builder, mlir::Location loc) -> mlir::Value {
     mlir::Type type = A.getType().cast<mlir::ShapedType>().getElementType();
 
@@ -286,4 +298,42 @@ auto passes::scalar_mul(mlir::Value A, float s, mlir::OpBuilder& builder, mlir::
     mlir::arith::MulFOp op = builder.create<mlir::arith::MulFOp>(loc, A, scalar);
 
     return op.getResult();
+}
+*/
+auto passes::scalar_mul(mlir::Value A, float s, mlir::OpBuilder& builder, mlir::Location loc) -> mlir::Value {
+    auto shapedType = A.getType().cast<mlir::ShapedType>();
+    auto elementType = shapedType.getElementType();
+
+    mlir::Value scalar = builder.create<mlir::arith::ConstantFloatOp>(loc, llvm::APFloat(s), elementType.cast<mlir::FloatType>());
+    mlir::Value init = builder.create<mlir::tensor::EmptyOp>(loc, shapedType.getShape(), elementType);
+
+    // linalg::generic for scalar mul:
+    llvm::SmallVector<mlir::AffineMap> indexingMaps = {
+        builder.getEmptyAffineMap(),                          // scalar
+        builder.getMultiDimIdentityMap(shapedType.getRank()), // Tensor A
+        builder.getMultiDimIdentityMap(shapedType.getRank())  // Tensor output
+        };
+
+    llvm::SmallVector<mlir::utils::IteratorType> iterTypes(
+        shapedType.getRank(), mlir::utils::IteratorType::parallel);
+    //auto iterTypesAttr = builder.getArrayAttr(iterTypes);
+
+    auto genericOp = builder.create<mlir::linalg::GenericOp>(
+        loc,
+        shapedType,
+        mlir::ValueRange{ scalar, A }, // inputs
+        mlir::ValueRange{ init },      // outputs
+        indexingMaps,
+        iterTypes,
+        [&](mlir::OpBuilder& nestedBuilder, mlir::Location nestedLoc, mlir::ValueRange args) {
+            // args[0] = , args[1] = элемент A
+            mlir::Value mul = nestedBuilder.create<mlir::arith::MulFOp>(
+                nestedLoc, 
+                args[0],  // scalar
+                args[1]   // A[i,j] - element
+            );
+            nestedBuilder.create<mlir::linalg::YieldOp>(nestedLoc, mul);
+        });
+
+    return genericOp.getResult(0);
 }

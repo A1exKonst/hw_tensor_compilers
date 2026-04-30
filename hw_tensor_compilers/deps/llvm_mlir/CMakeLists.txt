@@ -11,24 +11,51 @@ message(STATUS "MLIR found: ${MLIR_FOUND}")
 message(STATUS "LLVM include dirs: ${LLVM_INCLUDE_DIRS}")
 message(STATUS "MLIR include dirs: ${MLIR_INCLUDE_DIRS}")
 
+set(llvm_components
+    core
+    support
+    native          # automatic choice of target
+    nativecodegen
+)
+
+llvm_map_components_to_libnames(llvm_libs ${llvm_components})
+
 add_library(mlir_deps INTERFACE)
 
 target_include_directories(mlir_deps INTERFACE ${MLIR_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 target_compile_definitions(mlir_deps INTERFACE ${LLVM_DEFINITIONS})
 
-target_link_libraries(mlir_deps INTERFACE 
+target_link_libraries(mlir_deps INTERFACE
+    ${llvm_libs}
     MLIRIR
-    MLIRPass
     MLIRFuncToLLVM
     MLIRLinalgToStandard
-    MLIRTensorToLinalg
     MLIRLinalgTransforms
+    MLIRTensorToLinalg
+    MLIRMemRefToSPIRV
+    MLIRReconcileUnrealizedCasts
+    MLIRBufferizationTransforms 
+    MLIRBufferizationToMemRef
+    MLIRSCFToControlFlow
+    MLIRMemRefToLLVM
+    MLIRTensorTilingInterfaceImpl
+    MLIRBufferizationPipelines
+    MLIRExecutionEngine
 
+    # Dialects:
     MLIRLinalgDialect
     MLIRTensorDialect
     MLIRArithDialect
     MLIRFuncDialect
+    MLIRSPIRVDialect
+    MLIRMemRefDialect
+    MLIRSCFDialect
+    MLIRBufferizationDialect
+    #MLIRConversionPasses 
 
+    # Core:
+    MLIRPass
+    MLIRTransforms
     MLIRParser
     MLIRSupport
     LLVMSupport

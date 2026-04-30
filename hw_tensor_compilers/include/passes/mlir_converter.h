@@ -33,6 +33,8 @@ namespace passes {
 
         auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
 
+        [[nodiscard]] static auto tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp>;
+
         static auto datatype_to_mlir_type(mlir::OpBuilder& builder, const graph_engine::DataType dtype) -> mlir::Type;
 
         static auto get_value_tensor_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph, graph_engine::ValueID value_id) -> mlir::RankedTensorType;

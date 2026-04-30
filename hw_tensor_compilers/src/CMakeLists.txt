@@ -4,16 +4,17 @@ add_library(tensor_compiler_lib STATIC
     "graph/shape.cpp" 
     "graph/graph.cpp"
 
-#    "passes/semantics.cpp"
     "passes/semantics_inferer.cpp"
     "passes/mlir_converter.cpp"
+    "passes/llvm_mlir_management/llvm_mlir_management.cpp" 
+    "passes/mlir_pipeline.cpp"
 
     "io/in_graph_onnx.cpp"
     "io/out_graph_console.cpp"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
-)
+ "graph/tensor.cpp")
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"
