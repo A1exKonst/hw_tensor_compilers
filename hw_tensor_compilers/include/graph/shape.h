@@ -2,6 +2,7 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <stdexcept>
 
 namespace graph_engine {
 
@@ -17,6 +18,16 @@ namespace graph_engine {
 
         size_t rank_ = 0;
         // current rank of Value
+
+        Shape(std::initializer_list<int64_t> list) {
+            std::copy(list.begin(),
+                list.size() > 10 ? list.begin() + 10 : list.end(),
+                dims.begin()
+            );
+            rank_ = list.size();
+        };
+
+        //friend Shape make_shape(std::initializer_list<int64_t> list);
 
     public:
         Shape() : rank_(0), dims({ 0,0,0,0,0,0,0,0,0,0 }) {};
@@ -40,6 +51,15 @@ namespace graph_engine {
 
         size_t rank() const noexcept;
 
+        size_t elements_size() const;
+
+        static auto make_shape(std::initializer_list<int64_t> list) -> Shape {
+            if (list.size() > MAX_VALUE_RANK) {
+                throw std::length_error("Shape::Shape(std::initializer_list<int64_t>) : list.size() > MAX_VALUE_RANK");
+            };
+            return Shape(list);
+        };
+
 
         // std container interface:
         auto begin() const noexcept { return dims.data(); }
@@ -50,11 +70,11 @@ namespace graph_engine {
         using iterator = const_iterator;
     };
 
-    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank = 0);
+    auto calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank = 0) -> std::optional<Shape>;
 
-    std::optional<Shape> calculate_matmul_compatible_shape(const Shape& s1, const Shape& s2);
+    auto calculate_matmul_compatible_shape(const Shape& s1, const Shape& s2) -> std::optional<Shape>;
 
-    Shape transposed(const Shape& s, unsigned short axis_1, unsigned short axis_2);
+    auto transposed(const Shape& s, unsigned short axis_1, unsigned short axis_2) -> Shape;
 
-    Shape transposed(const Shape& s);
+    auto transposed(const Shape& s) -> Shape;
 };

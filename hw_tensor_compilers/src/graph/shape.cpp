@@ -20,7 +20,9 @@ namespace graph_engine {
     };
 
     void Shape::rank(size_t rank__) {
-        assert(rank__ < MAX_VALUE_RANK);
+        if (rank__ >= MAX_VALUE_RANK) {
+            throw std::length_error("Shape::rank(new_rank) : rank should be less than MAX_VALUE_RANK");
+        };
 
         // when expanding matrix default size in a dim is 1
         for (unsigned short i = rank_; i < rank__; ++i) dims[i] = 1;
@@ -42,32 +44,12 @@ namespace graph_engine {
         }
         return true;
     };
-    /*
-    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2) {
 
-        unsigned min_rank = (s1.rank() < s2.rank()) ? s1.rank() : s2.rank();
-        unsigned max_rank = (s1.rank() > s2.rank()) ? s1.rank() : s2.rank();
-        const Shape& max_rank_shape = (s1.rank() > s2.rank()) ? s1 : s2;
-
-        Shape result = Shape(max_rank);
-
-        for (int i = 1; i < min_rank + 1; ++i) {
-            auto first_dim = s1[s1.rank() - i];
-            auto second_dim = s2[s2.rank() - i];
-            bool is_compatible = ((first_dim == second_dim) ||
-                (first_dim == 1) ||
-                (second_dim == 1));
-            if (!is_compatible) return std::nullopt;
-            result[max_rank - i] = (first_dim > second_dim) ? first_dim : second_dim;
-        }
-
-        for (int i = 0; i < max_rank - min_rank; ++i) {
-            result[i] = max_rank_shape[i];
-        }
-
-        return result;
+    size_t Shape::elements_size() const {
+        size_t sz = 1;
+        for (unsigned short i = 0; i < rank_; ++i) sz*=dims[i];
+        return sz;
     };
-    */
 
     std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank) {
 

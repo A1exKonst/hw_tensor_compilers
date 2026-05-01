@@ -27,15 +27,17 @@ target_compile_definitions(mlir_deps INTERFACE ${LLVM_DEFINITIONS})
 
 target_link_libraries(mlir_deps INTERFACE
     ${llvm_libs}
+    MLIRBufferizationTransforms 
+    MLIRBufferizationToMemRef
     MLIRIR
     MLIRFuncToLLVM
+    MLIRFuncTransforms
     MLIRLinalgToStandard
     MLIRLinalgTransforms
     MLIRTensorToLinalg
     MLIRMemRefToSPIRV
     MLIRReconcileUnrealizedCasts
-    MLIRBufferizationTransforms 
-    MLIRBufferizationToMemRef
+    #MLIRConvertFuncToLLVM
     MLIRSCFToControlFlow
     MLIRMemRefToLLVM
     MLIRTensorTilingInterfaceImpl

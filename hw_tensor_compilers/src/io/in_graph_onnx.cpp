@@ -1,18 +1,21 @@
-#include "io/in_graph_onnx.h"
 #include <cassert>
 #include <fstream>
 #include <unordered_map>
-#include "io/out_graph_console.h"
 #include <iostream>
 #include <variant>
+
+#include "io/out_graph_console.h"
+#include "io/in_graph_onnx.h"
 
 using namespace graph_engine;
 
 auto io::import_from_model(const std::string& filename) -> Graph {
     onnx::ModelProto protobuf_model;
 
-    std::ifstream model_file{ filename, std::ios::ate | std::ios::binary };
+    //std::string full_path = std::string(DATA_PATH) + filename;
 
+    std::ifstream model_file{ filename, std::ios::ate | std::ios::binary };
+    
     if (!model_file.is_open()) {
         throw std::runtime_error("Exception: could not open file " + filename);
     };
