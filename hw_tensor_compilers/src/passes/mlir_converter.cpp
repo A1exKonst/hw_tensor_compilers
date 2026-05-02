@@ -3,6 +3,7 @@
 #include "passes/mlir_converter.h"
 
 #include "mlir/IR/Operation.h"
+#include "mlir/IR/AffineMap.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/Dialect/Linalg/IR/Linalg.h"
@@ -303,7 +304,7 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
         bool transB = bool(std::get<int64_t>(graph.nodes[producer_node].attr.at("transB")));
         float alpha = std::get<float>(graph.nodes[producer_node].attr.at("alpha"));
         float beta = std::get<float>(graph.nodes[producer_node].attr.at("beta"));
-        std::cout << "mlir gemm 1" << std::endl;
+
         mlir::Value matmul_result = matmul(input_A, input_B, builder, loc, transB);
         mlir::Value alpha_result = scalar_mul(matmul_result, alpha, builder, loc);
         mlir::Value beta_result = scalar_mul(input_C, beta, builder, loc);
@@ -334,14 +335,80 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
                 b.create<mlir::linalg::YieldOp>(loc, mlir::ValueRange{ sum });
             }
         ).getResult(0);
-
-
-        // elementwise add:
-        //result = create_mlir_binary_operation<mlir::arith::AddIOp, mlir::arith::AddFOp>(alpha_result, beta_result, builder, loc);
-        std::cout << "mlir gemm 2" << std::endl;
         break;
     }
-    case OperatorType::CONV:
+    case OperatorType::CONV: {
+        // Given : mlir::Value input; mlir::Value filter
+        // Dialects : linalg, arith, tensor
+        // 
+        // Expected output:
+        // mlir::Value result = conv_op.getResult(0)
+
+        mlir::Value input = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[0]);
+        mlir::Value filter = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[1]);
+
+        auto input_type = mlir::cast<mlir::RankedTensorType>(input.getType());
+        auto filter_type = mlir::cast<mlir::RankedTensorType>(filter.getType());
+        auto element_type = input_type.getElementType();
+        auto output_type = get_value_tensor_type(builder, graph, value);
+
+        mlir::Value init_tensor = builder.create<mlir::tensor::EmptyOp>(loc, output_type.getShape(), output_type.getElementType());
+        mlir::Value dest; 
+
+        // init destination with zeroes:
+        if (graph.nodes[producer_node].inputs.size() < 3) {
+            mlir::Value zero = builder.create<mlir::arith::ConstantOp>(loc, builder.getZeroAttr(element_type));
+            dest = builder.create<mlir::linalg::FillOp>(loc, zero, init_tensor).result();
+        }
+        else { // V3 as bias arg in Convolution:
+            mlir::Value bias = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[2]);
+            auto bias_type = mlir::cast<mlir::RankedTensorType>(bias.getType());
+            int64_t last_dim = output_type.getRank() - 1;
+
+            // fill init_tensor with bias for all H, W
+            dest = builder.create<mlir::linalg::BroadcastOp>(
+                loc,
+                bias,
+                init_tensor,
+                mlir::ArrayRef<int64_t>{0,2,3} // broadcasted dims
+            ).getResults()[0];
+        }
+
+        // Affine Maps :
+        // Iterators and Conv indices: d0=N, d1=H, d2=W, d3=F, d4=KH, d5=KW, d6=C
+        auto map_input = mlir::AffineMap::get(7, 0, { builder.getAffineDimExpr(0),
+                                                     builder.getAffineDimExpr(1) + builder.getAffineDimExpr(4),
+                                                     builder.getAffineDimExpr(2) + builder.getAffineDimExpr(5),
+                                                     builder.getAffineDimExpr(6) }, builder.getContext());
+        auto map_filter = mlir::AffineMap::get(7, 0, { builder.getAffineDimExpr(4),
+                                                      builder.getAffineDimExpr(5),
+                                                      builder.getAffineDimExpr(6),
+                                                      builder.getAffineDimExpr(3) }, builder.getContext());
+        auto map_output = mlir::AffineMap::get(7, 0, { builder.getAffineDimExpr(0),
+                                                      builder.getAffineDimExpr(1),
+                                                      builder.getAffineDimExpr(2),
+                                                      builder.getAffineDimExpr(3) }, builder.getContext());
+
+        // Iterators:
+        llvm::SmallVector<mlir::AffineMap, 3> indexing_maps = { map_input, map_filter, map_output };
+        llvm::SmallVector<mlir::utils::IteratorType> iterTypes(4, mlir::utils::IteratorType::parallel);
+        iterTypes.append(3, mlir::utils::IteratorType::reduction);
+        auto convOp = builder.create<mlir::linalg::GenericOp>(
+            loc,
+            output_type,
+            mlir::ValueRange{ input, filter }, // V0, V2
+            mlir::ValueRange{ dest },          // V1 (output buffer)
+            indexing_maps,
+            iterTypes,
+            [&](mlir::OpBuilder& builder, mlir::Location loc, mlir::ValueRange args) {
+                // args[0] - input, args[1] - filter, args[2] - output_acc
+                mlir::Value mul = builder.create<mlir::arith::MulFOp>(loc, args[0], args[1]);
+                mlir::Value add = builder.create<mlir::arith::AddFOp>(loc, mul, args[2]);
+                builder.create<mlir::linalg::YieldOp>(loc, add);
+            });
+        result = convOp.getResult(0);
+        break;
+    }
     case OperatorType::MATMUL:
     default:
         throw std::runtime_error(

@@ -31,8 +31,7 @@ namespace passes::llvm_mlir_management {
 
 	void set_pipeline(mlir::PassManager& pm) {
 
-		// 1. tensor.empty -> bufferization.alloc_tensor
-		pm.addPass(mlir::bufferization::createEmptyTensorToAllocTensorPass());
+		pm.addPass(mlir::bufferization::createEmptyTensorToAllocTensorPass());	// 1. tensor.empty -> bufferization.alloc_tensor
 
 		// 2. bufferization (allocation of all tensors):
 		mlir::bufferization::OneShotBufferizationOptions options;
@@ -42,20 +41,29 @@ namespace passes::llvm_mlir_management {
 		options.allowUnknownOps = true;
 		pm.addPass(mlir::bufferization::createOneShotBufferizePass(options));
 
-		// 3. bufferization (deallocation, remove memory leaks):
+		/* 3. Destination-Passing Style:
+				mlir is generated with "return tensor<...>", 
+				but llvm is more stable in destination-passing style.
+				especially it is required when using llvm.emit_c_interface 
+				This pass transforms function signature */
+		pm.addPass(mlir::bufferization::createBufferResultsToOutParamsPass());	
+																						
+		
+
+		// 4. bufferization (deallocation, remove memory leaks):
 		mlir::bufferization::BufferDeallocationPipelineOptions deallocOptions;
 		mlir::bufferization::buildBufferDeallocationPipeline(pm, deallocOptions);
 
-		pm.addPass(mlir::createConvertLinalgToLoopsPass());				// 4. linalg -> scf.parallel, scf.for
-		pm.addPass(mlir::createConvertSCFToCFPass());					// 5. scf -> cf (basic_blocks, branches)
-		pm.addPass(mlir::createArithToLLVMConversionPass());			// 6. arith.addi -> llvm.add
-		pm.addPass(mlir::createFinalizeMemRefToLLVMConversionPass());	// 7. memref -> llvm struct descriptors
-		pm.addPass(mlir::createConvertControlFlowToLLVMPass());			// 8. cf -> llvm.br, llvm.cond_br
+		pm.addPass(mlir::createConvertLinalgToLoopsPass());						// 4. linalg -> scf.parallel, scf.for
+		pm.addPass(mlir::createConvertSCFToCFPass());							// 5. scf -> cf (basic_blocks, branches)
+		pm.addPass(mlir::createArithToLLVMConversionPass());					// 6. arith.addi -> llvm.add
+		pm.addPass(mlir::createFinalizeMemRefToLLVMConversionPass());			// 7. memref -> llvm struct descriptors
+		pm.addPass(mlir::createConvertControlFlowToLLVMPass());					// 8. cf -> llvm.br, llvm.cond_br
 		//mlir::LowerToLLVMOptions llvm_options(&context);
 		//llvm_options.emitCWrappers = true;
 		//pm.addPass(mlir::createAddCFuncWrapperPass());
-		pm.addPass(mlir::createConvertFuncToLLVMPass());				// 9. mlir.func -> llvm.func. Changes types in func signature
-		pm.addPass(mlir::createReconcileUnrealizedCastsPass());			// 20.remove builtin.unrealized_conversion_cast
+		pm.addPass(mlir::createConvertFuncToLLVMPass());						// 9. mlir.func -> llvm.func. Changes types in func signature
+		pm.addPass(mlir::createReconcileUnrealizedCastsPass());					// 10.remove builtin.unrealized_conversion_cast
 	}
 
 }

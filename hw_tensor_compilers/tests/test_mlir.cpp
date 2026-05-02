@@ -6,81 +6,120 @@
 
 #include "graph/graph.h"
 #include "io/in_graph_onnx.h"
-#include "passes/semantics_inferer.h"
-#include "passes/mlir_converter.h"
+#include "passes/passes.h"
 
 #include "mlir/IR/MLIRContext.h"
 
 
 
-TEST(MLIRConversion, SingleMulModel) {
+TEST(MLIRPipeline, SingleMulModel) {
     std::string filename = "data/single_mul.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
-};
 
-TEST(MLIRConversion, SingleAddModel) {
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
+}
+
+TEST(MLIRPipeline, SingleAddModel) {
     std::string filename = "data/single_add.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRConversion, SingleReluModel) {
+TEST(MLIRPipeline, SingleReluModel) {
     std::string filename = "data/single_relu.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRConversion, SingleMatMulModel) {
+TEST(MLIRPipeline, SingleMatMulModel) {
     std::string filename = "data/single_matmul.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRConversion, SingleConvModel) {
+TEST(MLIRPipeline, SingleConvModel) {
     std::string filename = "data/single_conv.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRConversion, SingleGemmModel) {
+TEST(MLIRPipeline, SingleGemmModel) {
     std::string filename = "data/single_gemm.onnx";
 
     graph_engine::Graph graph = io::import_from_model(filename);
     EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
 
     mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
     passes::GraphToMLIRConverter converter{ context, graph };
     mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
+};
+
+TEST(MLIRPipeline, TinyModel) {
+    std::string filename = "data/tiny.onnx";
+
+    graph_engine::Graph graph = io::import_from_model(filename);
+    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+
+    mlir::MLIRContext context;
+    passes::llvm_mlir_management::set_context(context);
+    passes::GraphToMLIRConverter converter{ context, graph };
+    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
 };

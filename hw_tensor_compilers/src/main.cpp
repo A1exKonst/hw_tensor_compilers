@@ -14,12 +14,12 @@ int main() {
 		std::string version = "0.2.39";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_add.onnx";
+		std::string filename = "data/single_relu.onnx";
 		// correct lowering		: gemm, relu, mul, add
-		// incorrect lowering	: 
-		// no gen				: matmul, conv
+		// incorrect lowering	: conv
+		// no gen				: matmul 
 		
-		passes::PassesPipeline::apply_pipeline(filename, passes::PipelineEndpoint::MLIR_LOWERING);
+		passes::PassesPipeline::apply_pipeline(filename, passes::PipelineEndpoint::EXECUTION);
 		
 		std::cout << "exec " << version << std::endl;
 	}
