@@ -5,7 +5,7 @@
 ## Building
 
 1. **Установите зависимости:**
-   В проекте используется [requirements.txt](deps/requirements.txt).
+   В проекте используется [requirements.txt](hw_tensor_compilers/deps/requirements.txt).
 
 ## Technology stack
 
