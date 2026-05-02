@@ -1,9 +1,24 @@
-Домашние задания 1 и 2: 
+# Tensor Compiler
 
-Requirements:
-1. Наличие пакета protobuf (для компиляции onnx.proto).
-2. Наличие пакета gtest.
-3. Наличие пакетов llvm[core, mlir]
+Тензорный компилятор: преобразование высокоуровневых представлений нейронных сетей ONNX в исполняемые файлы MLIR.
+
+## Building
+
+1. **Установите зависимости:**
+   В проекте используется [requirements.txt](deps/requirements.txt).
+
+## Technology stack
+
+* C++ 17
+* CMake 3.15
+* LLVM[MLIR] Dialects : linalg, arith, tensor
+* GTest
+* Protobuf : onnx.pb.h (onnx.proto)
+
+## Project structure
+* src/main.cpp - точка входа.
+* tests/test_main.cpp - точка запуска тестов.
+* [code_style.txt](code_style.txt) - code style проекта.
 
 
 Отчет:

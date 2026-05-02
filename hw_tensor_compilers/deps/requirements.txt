@@ -1,0 +1,5 @@
+Requirements:
+1. protobuf 6.33.4#1 
+	Для компиляции onnx.proto и получения onnx.pb.h.
+2. gtest 1.17.0#2
+3. llvm[core, mlir, enable-assertions, tools, utils] 18.1.6#5
