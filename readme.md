@@ -18,7 +18,7 @@
 ## Project structure
 * src/main.cpp - точка входа.
 * tests/test_main.cpp - точка запуска тестов.
-* [code_style.txt](code_style.txt) - code style проекта.
+* [code_style.md](code_style.md) - code style проекта.
 
 
 Отчет:
