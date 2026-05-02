@@ -43,6 +43,7 @@ target_link_libraries(mlir_deps INTERFACE
     MLIRTensorTilingInterfaceImpl
     MLIRBufferizationPipelines
     MLIRExecutionEngine
+    #MLIRCRunnerUtils
 
     # Dialects:
     MLIRLinalgDialect

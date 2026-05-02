@@ -9,8 +9,34 @@
 #include "mlir/Pass/PassManager.h"
 #include "mlir/ExecutionEngine/ExecutionEngine.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
-#include "mlir/ExecutionEngine/CRunnerUtils.h"
 #include "llvm/Support/TargetSelect.h"
+//#include "mlir/ExecutionEngine/CRunnerUtils.h"
+
+
+#include "llvm/Support/DynamicLibrary.h"
+#include "llvm/Support/Debug.h"
+#include <cstring>
+
+/*
+extern "C" {
+	__declspec(dllexport) void memrefCopy(int64_t elementSize,
+		void* sBase, void* sPtr, int64_t sOff,
+		void* dBase, void* dPtr, int64_t dOff,
+		int64_t size) {
+		char* src = (char*)sPtr + sOff * elementSize;
+		char* dst = (char*)dPtr + dOff * elementSize;
+		if (size > 0) {
+			std::memcpy(dst, src, size * elementSize);
+		}
+	}
+}
+*/
+
+static void my_jit_copy_stub(int64_t elemSize, void* s1, void* s2, int64_t s3,
+	void* d1, void* d2, int64_t d3, int64_t size) {
+	// Минимальная реализация для JIT
+	std::memcpy(d2, s2, size * elemSize);
+}
 
 
 namespace passes {
@@ -43,14 +69,19 @@ namespace passes {
 		llvm::InitializeNativeTarget();
 		llvm::InitializeNativeTargetAsmPrinter();
 		llvm::InitializeNativeTargetAsmParser();
+
+		/*
+		std::cout << "> Registering symbols..." << std::endl;
+		void* ptr = reinterpret_cast<void*>(&memrefCopy);
+		llvm::sys::DynamicLibrary::AddSymbol("memrefCopy", ptr);
+		llvm::sys::DynamicLibrary::AddSymbol("_memrefCopy", ptr);
+		llvm::sys::DynamicLibrary::AddSymbol("_mlir_ciface_memrefCopy", ptr);
+
+		llvm::DebugFlag = true;
+		*/
+		std::cout << "> create ExecutionEngine" << std::endl;
 		mlir::ExecutionEngineOptions options;
-		//options.jitCodeGenOptLevel = llvm::CodeGenOpt::Aggressive;
 
-		llvm::SmallVector<llvm::StringRef, 4> runtimeLibs;
-		runtimeLibs.push_back("libmlir_runner_utils.so");
-		runtimeLibs.push_back("libmlir_c_runner_utils.so");
-
-		options.sharedLibPaths = runtimeLibs;
 		auto engine_result = mlir::ExecutionEngine::create(*model);
 		std::cout << "ExecutionEngine created: " << bool(engine_result) << std::endl;
 		if (!bool(engine_result)) {
@@ -74,7 +105,7 @@ namespace passes {
 		if (error) {
 			llvm::errs() << "Execution failed\n";
 		}
-		
+		llvm::DebugFlag = false;
 
 		if (endpoint == PipelineEndpoint::EXECUTION) return;
 

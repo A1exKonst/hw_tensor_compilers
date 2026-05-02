@@ -1,7 +1,8 @@
 #pragma once
 #include "graph/tensor.h"
 
-#include "mlir/ExecutionEngine/CRunnerUtils.h"
+//#include "mlir/ExecutionEngine/CRunnerUtils.h"
+#include "mlir/ExecutionEngine/ExecutionEngine.h"
 #include "mlir/IR/BuiltinOps.h"
 
 namespace passes::llvm_mlir_management {

@@ -25,6 +25,7 @@
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/Dialect/SCF/Transforms/BufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/Tensor/Transforms/BufferizableOpInterfaceImpl.h"
+#include "mlir/Dialect/MemRef/Transforms/Passes.h"
 //#include "mlir/Dialect/Tensor/IR/TensorTilingInterface.h" 
 
 namespace passes::llvm_mlir_management {
@@ -62,6 +63,7 @@ namespace passes::llvm_mlir_management {
 		//mlir::LowerToLLVMOptions llvm_options(&context);
 		//llvm_options.emitCWrappers = true;
 		//pm.addPass(mlir::createAddCFuncWrapperPass());
+		pm.addPass(mlir::memref::createExpandStridedMetadataPass());
 		pm.addPass(mlir::createConvertFuncToLLVMPass());						// 9. mlir.func -> llvm.func. Changes types in func signature
 		pm.addPass(mlir::createReconcileUnrealizedCastsPass());					// 10.remove builtin.unrealized_conversion_cast
 	}
