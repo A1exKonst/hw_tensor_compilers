@@ -6,21 +6,22 @@
 * `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `wip`.
 
 ## Format
-* Отступы: 1 tab.
-* Скобки: Google style.
+* Padding: 1 tab.
+* Brackets: Google style.
 
 ## Naming
-* Классы: `PascalCase`.
-* Переменные: `snake_case`.
-* Функции: `auto do_snake_case(Args args) -> ReturnType;`.
-* Константы: `ALL_CAPS`.
+* Classes: `PascalCase`.
+* Variables: `snake_case`.
+* Functions: `auto do_snake_case(Args args) -> ReturnType;`.
+* Constants: `ALL_CAPS`.
 
 ## Project stucture
-* Для объявления символов используйте namespace.
+* Always use namespace for symbol declaration.
+* A folder usually corresponds to a namespace or nested namespace
 
 ## Avoided patterns
-* Не используйте `using namespace std;`.
-* Не используйте макросы.
+* Do not use `using namespace std;`.
+* Do not use macros.
 
 ## Header code example
 ```cpp
