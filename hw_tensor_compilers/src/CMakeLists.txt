@@ -12,9 +12,9 @@ add_library(tensor_compiler_lib STATIC
     "passes/mlir_pipeline.cpp"
     "passes/passes_pipeline.cpp"
 
-    #"io/in_graph_onnx.cpp"
     "io/out_graph_console.cpp"
     "io/onnx_importer.cpp"
+    #"io/console_graph_exporter.cpp"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
