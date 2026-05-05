@@ -2,7 +2,8 @@
 
 #include "passes/passes.h"
 #include "graph/graph_engine.h"
-#include "io/io.h"
+#include "io/onnx_importer.h"
+#include "io/out_graph_console.h"
 
 // PipelineEndpoint::EXECUTION dependencies:
 #include "mlir/IR/MLIRContext.h"
@@ -42,7 +43,7 @@ static void my_jit_copy_stub(int64_t elemSize, void* s1, void* s2, int64_t s3,
 namespace passes {
 	void PassesPipeline::apply_pipeline(const std::string& filename, passes::PipelineEndpoint endpoint, bool debug) {
 		std::cout << "================ onnx -> graph ====================================" << std::endl;
-		graph_engine::Graph graph = io::import_from_model(filename);
+		graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 		std::cout << graph << std::endl;
 		if (endpoint == PipelineEndpoint::GRAPH_INPUT) return;
 

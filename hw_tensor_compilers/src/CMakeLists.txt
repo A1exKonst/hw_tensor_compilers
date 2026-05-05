@@ -10,13 +10,15 @@ add_library(tensor_compiler_lib STATIC
     "passes/llvm_mlir_management/set_pipeline.cpp" 
     "passes/llvm_mlir_management/set_context.cpp"
     "passes/mlir_pipeline.cpp"
+    "passes/passes_pipeline.cpp"
 
-    "io/in_graph_onnx.cpp"
+    #"io/in_graph_onnx.cpp"
     "io/out_graph_console.cpp"
+    "io/onnx_importer.cpp"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
- "passes/passes_pipeline.cpp")
+)
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"

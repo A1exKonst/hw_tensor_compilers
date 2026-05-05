@@ -11,7 +11,7 @@
 int main() {
 
 	try {
-		std::string version = "0.2.39";
+		std::string version = "0.2.41";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_relu.onnx";
@@ -19,7 +19,7 @@ int main() {
 		// incorrect lowering	: conv
 		// no gen				: matmul 
 		
-		passes::PassesPipeline::apply_pipeline(filename, passes::PipelineEndpoint::EXECUTION);
+		passes::PassesPipeline::apply_pipeline(filename, passes::PipelineEndpoint::SEMANTICS_INFERER);
 		
 		std::cout << "exec " << version << std::endl;
 	}
