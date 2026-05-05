@@ -22,6 +22,7 @@ namespace io {
         ConsoleGraphExporter(ConsoleGraphExporter&&) = default;
         ConsoleGraphExporter& operator=(ConsoleGraphExporter&&) = default;
 
+        using GraphExporter::operator<<;
         auto operator<<(const graph_engine::Graph& graph) -> GraphExporter& override;
 
     protected:
@@ -33,11 +34,11 @@ namespace io {
 
     auto operator<< (std::ostream& out, const graph_engine::Attributes& attrs) -> std::ostream&;
 
-    auto operator<< (std::ostream& out, const graph_engine::OperatorType op) -> std::ostream&;
+    auto operator<< (std::ostream& out, const graph_engine::OperatorType& op) -> std::ostream&;
 
     auto operator<< (std::ostream& out, const graph_engine::Node& node) -> std::ostream&;
 
-    auto operator<< (std::ostream& out, const graph_engine::DataType dt) -> std::ostream&;
+    auto operator<< (std::ostream& out, const graph_engine::DataType& dt) -> std::ostream&;
 
     auto operator<< (std::ostream& out, const graph_engine::Shape& shape) -> std::ostream&;
 

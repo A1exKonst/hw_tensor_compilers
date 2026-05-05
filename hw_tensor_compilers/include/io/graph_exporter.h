@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 #include "graph/graph.h"
 
 
@@ -18,6 +20,16 @@ namespace io {
         template <typename T>
         auto operator<<(const T& data) -> GraphExporter& {
             write(std::to_string(data));
+            return *this;
+        }
+
+        GraphExporter& operator<<(const std::string& data) {
+            write(data);
+            return *this;
+        }
+
+        GraphExporter& operator<<(const char* data) {
+            write(data);
             return *this;
         }
 

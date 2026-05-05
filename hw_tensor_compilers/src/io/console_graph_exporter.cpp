@@ -97,7 +97,7 @@ namespace io {
         return out;
     }
 
-    auto ConsoleGraphExporter::operator<<(const graph_engine::Graph& graph) -> GraphExporter& {
+    auto ConsoleGraphExporter::operator<<(const Graph& graph) -> GraphExporter& {
         std::cout << graph;
         return *this;
     }
