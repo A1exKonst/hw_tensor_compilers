@@ -4,6 +4,8 @@
 #include <optional>
 #include <stdexcept>
 
+
+
 namespace graph_engine {
 
     // Shape is a shape (or dims) of a given Value : Value.shape

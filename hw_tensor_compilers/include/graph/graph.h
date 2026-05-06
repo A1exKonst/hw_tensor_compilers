@@ -1,11 +1,14 @@
 #pragma once
 #include <vector>
 
-#include "value.h"
-#include "node.h"
-#include "attributes.hpp"
+#include "graph/value.h"
+#include "graph/node.h"
+#include "graph/attributes.hpp"
+
+
 
 namespace graph_engine {
+
     class Graph {
     public:
         std::vector<Value> values;

@@ -30,11 +30,11 @@
 #include <std>
 #include <std>
 
-#include "extern_dependency.h"
-#include "extern_dependency.h"
+#include "internal_dependency.h"
+#include "internal_dependency.h"
 
-#include "internal_dependency.h"
-#include "internal_dependency.h"
+#include "extern_dependency.h"
+#include "extern_dependency.h"
 
 
 

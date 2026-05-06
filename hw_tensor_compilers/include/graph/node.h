@@ -3,10 +3,12 @@
 #include <optional>
 #include <unordered_map>
 
-#include "attributes.hpp"
+#include "graph/attributes.hpp"
+
 
 
 namespace graph_engine {
+
     using ValueID = size_t;
 
     enum class OperatorType {

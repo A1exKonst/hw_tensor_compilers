@@ -8,10 +8,11 @@
 #include "passes/llvm_mlir_management/llvm_mlir_management.h"
 
 
+
 int main() {
 
 	try {
-		std::string version = "0.2.47";
+		std::string version = "0.2.50";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_relu.onnx";
