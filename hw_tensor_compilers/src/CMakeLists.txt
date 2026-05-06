@@ -5,6 +5,7 @@ add_library(tensor_compiler_lib STATIC
     "graph/graph.cpp"
     
 
+    "passes/semantics_inferer_pass/utils.cpp"
     "passes/semantics_inferer.cpp"
     "passes/mlir_converter.cpp"
     "passes/llvm_mlir_management/set_pipeline.cpp" 
