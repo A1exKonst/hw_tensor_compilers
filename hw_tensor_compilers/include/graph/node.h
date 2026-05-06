@@ -20,7 +20,8 @@ namespace graph_engine {
         DTYPE_CONVERSION,
         SHAPE_BROADCAST,
         CONSTANT,
-        INPUT
+        INPUT,
+        COUNT
     };
 
     // Узел графа (Операция)

@@ -99,13 +99,13 @@ namespace io {
 
         onnx::ModelProto protobuf_model;
 
-        std::ifstream model_file{ filename, std::ios::ate | std::ios::binary };
+        std::ifstream model_file{ filename_, std::ios::ate | std::ios::binary };
 
         if (!model_file.is_open()) {
-            throw std::runtime_error("Exception: could not open file " + filename);
+            throw std::runtime_error("Exception: could not open file " + filename_);
         };
 
-        std::ifstream input{ filename, std::ios::binary };
+        std::ifstream input{ filename_, std::ios::binary };
 
         protobuf_model.ParseFromIstream(&input);
 

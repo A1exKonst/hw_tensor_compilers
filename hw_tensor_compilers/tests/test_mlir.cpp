@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 
 #include "graph/graph.h"
-#include "io/in_graph_onnx.h"
+#include "io/onnx_importer.h"
 #include "passes/passes.h"
 
 #include "mlir/IR/MLIRContext.h"
@@ -15,8 +15,8 @@
 TEST(MLIRPipeline, SingleMulModel) {
     std::string filename = "data/single_mul.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -31,8 +31,8 @@ TEST(MLIRPipeline, SingleMulModel) {
 TEST(MLIRPipeline, SingleAddModel) {
     std::string filename = "data/single_add.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -47,8 +47,8 @@ TEST(MLIRPipeline, SingleAddModel) {
 TEST(MLIRPipeline, SingleReluModel) {
     std::string filename = "data/single_relu.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -63,8 +63,8 @@ TEST(MLIRPipeline, SingleReluModel) {
 TEST(MLIRPipeline, SingleMatMulModel) {
     std::string filename = "data/single_matmul.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -79,8 +79,8 @@ TEST(MLIRPipeline, SingleMatMulModel) {
 TEST(MLIRPipeline, SingleConvModel) {
     std::string filename = "data/single_conv.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -95,8 +95,8 @@ TEST(MLIRPipeline, SingleConvModel) {
 TEST(MLIRPipeline, SingleGemmModel) {
     std::string filename = "data/single_gemm.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
@@ -111,8 +111,8 @@ TEST(MLIRPipeline, SingleGemmModel) {
 TEST(MLIRPipeline, TinyModel) {
     std::string filename = "data/tiny.onnx";
 
-    graph_engine::Graph graph = io::import_from_model(filename);
-    EXPECT_NO_THROW(passes::SemanticsInferer::transform_graph(graph));
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInferer().transform_graph(graph));
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);

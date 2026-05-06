@@ -6,7 +6,7 @@
 #include <optional>
 #include <algorithm>
 
-#include "io/out_graph_console.h"
+#include "io/console_graph_exporter.h"
 
 namespace graph_engine {
 

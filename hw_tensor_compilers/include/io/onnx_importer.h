@@ -13,11 +13,11 @@ namespace io {
     */
     class OnnxImporter : public GraphImporter {
     private:
-        std::string filename;
+        std::string filename_;
 
     public:
         explicit OnnxImporter(std::string new_filename) 
-            : filename(std::move(new_filename)) {}
+            : filename_(std::move(new_filename)) {}
         ~OnnxImporter() override = default;
 
         OnnxImporter(const OnnxImporter&) = delete;

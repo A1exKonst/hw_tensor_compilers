@@ -83,15 +83,15 @@ namespace my_space {
 namespace my_space {
 
     auto MyClassName::do_something() -> void {
-    };
+    }
 
     auto MyClassName::get_value() const -> int{
-    };
+    }
 
     auto MyClassName::internal_setup() -> void {
-    };
+    }
 
 	auto do_action() -> void{
-    };
+    }
 };
 ```

@@ -2,12 +2,12 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "graph/graph.h"
-#include "io/in_graph_onnx.h"
-#include "io/out_graph_console.h"
+#include "io/onnx_importer.h"
+#include "io/console_graph_exporter.h"
 
 TEST(OnnxImport, SingleMulModel) {
     std::string filename = "data/single_mul.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 1);
     ASSERT_EQ(graph.values.size(), 3);
@@ -44,7 +44,7 @@ TEST(OnnxImport, SingleMulModel) {
 
 TEST(OnnxImport, SingleAddModel) {
     std::string filename = "data/single_add.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 1);
     ASSERT_EQ(graph.values.size(), 3);
@@ -81,7 +81,7 @@ TEST(OnnxImport, SingleAddModel) {
 
 TEST(OnnxImport, SingleReluModel) {
     std::string filename = "data/single_relu.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 1);
     ASSERT_EQ(graph.values.size(), 2);
@@ -112,7 +112,7 @@ TEST(OnnxImport, SingleReluModel) {
 
 TEST(OnnxImport, SingleMatMulModel) {
     std::string filename = "data/single_matmul.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 1);
     ASSERT_EQ(graph.values.size(), 3);
@@ -148,7 +148,7 @@ TEST(OnnxImport, SingleMatMulModel) {
 
 TEST(OnnxImport, SingleConvModel) {
     std::string filename = "data/single_conv.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 3);
     ASSERT_EQ(graph.values.size(), 4);
@@ -199,7 +199,7 @@ TEST(OnnxImport, SingleConvModel) {
 
 TEST(OnnxImport, SingleGemmModel) {
     std::string filename = "data/single_gemm.onnx";
-    graph_engine::Graph graph = io::import_from_model(filename);
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
 
     ASSERT_EQ(graph.nodes.size(), 3);
     ASSERT_EQ(graph.values.size(), 4);

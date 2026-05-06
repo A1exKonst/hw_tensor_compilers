@@ -9,12 +9,13 @@ namespace io {
     */
     class GraphImporter {
     public:
-        GraphImporter() = default;
         virtual ~GraphImporter() = default;
         GraphImporter(const GraphImporter&) = delete;
         GraphImporter& operator=(const GraphImporter&) = delete;
 
         virtual auto import_graph() -> graph_engine::Graph = 0;
 
+    protected:
+        GraphImporter() = default;
     };
 };

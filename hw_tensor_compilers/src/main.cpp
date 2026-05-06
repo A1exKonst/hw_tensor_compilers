@@ -11,20 +11,27 @@
 int main() {
 
 	try {
-		std::string version = "0.2.45";
+		std::string version = "0.2.47";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_relu.onnx";
-		//graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
-		//io::ConsoleGraphExporter out;
-		//out << "Hello, GraphExporter!" << std::endl;
-		//out << graph;
-
 		// correct lowering		: gemm, relu, mul, add
 		// incorrect lowering	: conv
 		// no gen				: matmul 
 		
-		passes::PassesPipeline::apply_pipeline(filename, passes::PipelineEndpoint::SEMANTICS_INFERER);
+		std::vector<std::unique_ptr<passes::GraphPass>> passes;
+		passes.push_back(std::make_unique<passes::SemanticsInferer>());
+		// TODO: add passes abstraction to PassesPipeline
+		auto importer = io::OnnxImporter(filename);
+		auto exporter = io::ConsoleGraphExporter();
+
+		passes::PassesPipeline pipeline(
+			importer,
+			exporter,
+			std::move(passes)
+		);
+
+		pipeline.apply_pipeline(passes::PipelineEndpoint::SEMANTICS_INFERER);
 		
 		std::cout << "exec " << version << std::endl;
 	}

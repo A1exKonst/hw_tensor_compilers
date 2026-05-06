@@ -11,12 +11,16 @@ namespace io {
     */
     class GraphExporter {
     public:
-
-        GraphExporter() = default;
         virtual ~GraphExporter() = default;
         GraphExporter(const GraphExporter&) = delete;
         GraphExporter& operator=(const GraphExporter&) = delete;
 
+        virtual auto operator<<(const graph_engine::Graph& graph) -> GraphExporter& = 0;
+
+    protected:
+        GraphExporter() = default;
+
+        /* 
         template <typename T>
         auto operator<<(const T& data) -> GraphExporter& {
             write(std::to_string(data));
@@ -32,12 +36,9 @@ namespace io {
             write(data);
             return *this;
         }
-
-        virtual auto operator<<(const graph_engine::Graph& graph) -> GraphExporter& = 0;
-
-    protected:
+        protected:
         virtual void write(const std::string& s) = 0;
-
+        */
     };
 
 };

@@ -3,7 +3,7 @@
 #include "passes/passes.h"
 #include "graph/graph_engine.h"
 #include "io/onnx_importer.h"
-#include "io/out_graph_console.h"
+#include "io/console_graph_exporter.h"
 
 // PipelineEndpoint::EXECUTION dependencies:
 #include "mlir/IR/MLIRContext.h"
@@ -11,7 +11,6 @@
 #include "mlir/ExecutionEngine/ExecutionEngine.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
 #include "llvm/Support/TargetSelect.h"
-//#include "mlir/ExecutionEngine/CRunnerUtils.h"
 
 
 #include "llvm/Support/DynamicLibrary.h"
@@ -41,15 +40,15 @@ static void my_jit_copy_stub(int64_t elemSize, void* s1, void* s2, int64_t s3,
 
 
 namespace passes {
-	void PassesPipeline::apply_pipeline(const std::string& filename, passes::PipelineEndpoint endpoint, bool debug) {
+	void PassesPipeline::apply_pipeline(passes::PipelineEndpoint endpoint, bool debug) {
 		std::cout << "================ onnx -> graph ====================================" << std::endl;
-		graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
-		std::cout << graph << std::endl;
+		graph_engine::Graph graph = importer.import_graph();
+		exporter << graph;
 		if (endpoint == PipelineEndpoint::GRAPH_INPUT) return;
 
 		std::cout << "================ semantics(graph) ====================================" << std::endl;
-		SemanticsInferer::transform_graph(graph);
-		std::cout << graph << std::endl;
+		SemanticsInferer().transform_graph(graph);
+		exporter << graph;
 		if (endpoint == PipelineEndpoint::SEMANTICS_INFERER) return;
 
 		std::cout << "================ graph -> mlir ====================================" << std::endl;
