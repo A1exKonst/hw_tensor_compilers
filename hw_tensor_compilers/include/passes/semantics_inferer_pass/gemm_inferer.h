@@ -8,6 +8,8 @@ namespace passes::semantics_inferer {
 
 	class GemmInferer : public passes::semantics_inferer::SemanticsInferer {
 	public:
+		GemmInferer() = default;
+
 		auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void override;
 	};
 }

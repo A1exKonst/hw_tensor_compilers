@@ -48,10 +48,13 @@ namespace passes {
 		exporter << graph;
 		if (endpoint == PipelineEndpoint::GRAPH_INPUT) return;
 
-		std::cout << "================ semantics(graph) ====================================" << std::endl;
-		SemanticsInferer().transform_graph(graph);
-		exporter << graph;
-		if (endpoint == PipelineEndpoint::SEMANTICS_INFERER) return;
+		std::cout << "================ passes(graph) ====================================" << std::endl;
+		for (const auto& pass : graph_passes) {
+			pass->transform_graph(graph);
+			exporter << graph;
+		}
+
+		if (endpoint == PipelineEndpoint::GRAPH_PASSES) return;
 
 		std::cout << "================ graph -> mlir ====================================" << std::endl;
 		mlir::MLIRContext context;

@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <memory>
 
 #include "graph/graph.h"
 #include "graph/node.h"
@@ -13,10 +14,10 @@ namespace passes
 	class SemanticsInfererPass : public GraphPass {
 	public:
 		SemanticsInfererPass(); // fill registry_
+		~SemanticsInfererPass() = default;
+
 		SemanticsInfererPass(const SemanticsInfererPass& other) = default;
 		SemanticsInfererPass(SemanticsInfererPass&& other) = default;
-
-		~SemanticsInfererPass() = default;
 
 		SemanticsInfererPass& operator=(const SemanticsInfererPass&) = default;
 		SemanticsInfererPass& operator=(SemanticsInfererPass&&) = default;
@@ -26,7 +27,7 @@ namespace passes
 	private:
 		std::unordered_map<
 			graph_engine::OperatorType, 
-			passes::semantics_inferer::SemanticsInferer
+			std::unique_ptr<passes::semantics_inferer::SemanticsInferer>
 		> registry_;
 	};
 }

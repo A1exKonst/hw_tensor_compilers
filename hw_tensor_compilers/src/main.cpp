@@ -12,7 +12,7 @@
 int main() {
 
 	try {
-		std::string version = "0.2.51";
+		std::string version = "0.2.55";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_relu.onnx";
@@ -21,8 +21,8 @@ int main() {
 		// no gen				: matmul 
 		
 		std::vector<std::unique_ptr<passes::GraphPass>> passes;
-		passes.push_back(std::make_unique<passes::SemanticsInferer>());
-		// TODO: add passes abstraction to PassesPipeline
+		passes.push_back(std::make_unique<passes::SemanticsInfererPass>());
+
 		auto importer = io::OnnxImporter(filename);
 		auto exporter = io::ConsoleGraphExporter();
 
@@ -32,7 +32,7 @@ int main() {
 			std::move(passes)
 		);
 
-		pipeline.apply_pipeline(passes::PipelineEndpoint::SEMANTICS_INFERER);
+		pipeline.apply_pipeline(passes::PipelineEndpoint::MLIR_LOWERING);
 		
 		std::cout << "exec " << version << std::endl;
 	}

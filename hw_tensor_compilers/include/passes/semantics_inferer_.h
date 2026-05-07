@@ -4,7 +4,7 @@
 
 namespace passes
 {
-	class SemanticsInferer : public GraphPass {
+	class [[deprecated("Use passes::SemanticsInfererPass instead")]] SemanticsInferer : public GraphPass {
 	public:
 		SemanticsInferer() {};
 		SemanticsInferer(const SemanticsInferer& other) = default;

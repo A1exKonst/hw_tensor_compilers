@@ -3,7 +3,7 @@
 namespace passes {
 	enum class PipelineEndpoint {
 		GRAPH_INPUT,
-		SEMANTICS_INFERER,
+		GRAPH_PASSES,
 		MLIR_GENERATION,
 		MLIR_LOWERING,
 		EXECUTION

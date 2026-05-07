@@ -1,4 +1,3 @@
-#include "passes/semantics_inferer.h"
 #include "passes/semantics_inferer_pass/utils.h"
 #include <iostream>
 #include "io/console_graph_exporter.h"
