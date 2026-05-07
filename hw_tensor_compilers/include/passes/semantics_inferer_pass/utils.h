@@ -9,7 +9,7 @@ namespace passes::semantics_inferer {
 
 	auto expect_shape(graph_engine::Graph& graph, const graph_engine::ValueID value_id, graph_engine::Shape shape) -> void;
 
-	auto expect(bool assertion, std::string&& error_message) -> void;
+	auto expect(bool assertion, std::string error_message) -> void;
 
 	auto expect_attribute(graph_engine::Graph& graph, graph_engine::NodeID node_id, const std::string& name, graph_engine::AttributeValue attr) -> void;
 

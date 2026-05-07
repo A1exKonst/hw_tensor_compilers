@@ -291,12 +291,12 @@ namespace passes::semantics_inferer {
 		return;
 	};
 
-	auto expect(bool assertion, std::string&& error_message) -> void {
+	auto expect(bool assertion, std::string error_message) -> void {
 		if (!assertion) {
 			throw std::runtime_error(std::move(error_message));
-		};
+		}
 		return;
-	};
+	}
 
 	auto expect_attribute(Graph& graph, NodeID node_id, const std::string& name, AttributeValue attr) -> void {
 		if (graph.nodes.at(node_id).attr.at(name) == attr) return;

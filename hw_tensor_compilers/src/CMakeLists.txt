@@ -25,7 +25,7 @@ add_library(tensor_compiler_lib STATIC
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
-)
+ "passes/semantics_inferer_pass/constant_inferer.cpp")
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"
