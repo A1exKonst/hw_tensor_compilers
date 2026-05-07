@@ -59,7 +59,8 @@ namespace passes {
 		std::cout << "================ graph -> mlir ====================================" << std::endl;
 		mlir::MLIRContext context;
 		passes::llvm_mlir_management::set_context(context);
-		mlir::OwningOpRef<mlir::ModuleOp> model = passes::GraphToMLIRConverter::tranform_graph(context, graph);
+		mlir::OwningOpRef<mlir::ModuleOp> model = passes::mlir_conversion::tranform_graph(context, graph);
+		// mlir::OwningOpRef<mlir::ModuleOp> model = passes::GraphToMLIRConverter::tranform_graph(context, graph);
 		std::cout << "Module is " << (mlir::succeeded(model->verify()) ? "valid" : "INVALID") << std::endl;
 		model->dump();
 		if (endpoint == PipelineEndpoint::MLIR_GENERATION) return;

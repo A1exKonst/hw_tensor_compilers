@@ -6,7 +6,7 @@ using namespace graph_engine;
 
 namespace passes::semantics_inferer {
 
-	auto transform_node(Graph& graph, const NodeID node_id) -> void {
+	[[deprecated]] auto transform_node(Graph& graph, const NodeID node_id) -> void {
 		Node& node = graph.nodes.at(node_id);
 		switch (node.op_type) {
 		case OperatorType::ADD:

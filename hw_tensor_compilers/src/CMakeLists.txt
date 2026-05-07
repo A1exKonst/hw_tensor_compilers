@@ -4,9 +4,6 @@ add_library(tensor_compiler_lib STATIC
     "graph/shape.cpp" 
     "graph/graph.cpp"
     
-
-    "passes/semantics_inferer_pass/utils.cpp"
-    #"passes/semantics_inferer.cpp"
     "passes/mlir_converter.cpp"
     "passes/llvm_mlir_management/set_pipeline.cpp" 
     "passes/llvm_mlir_management/set_context.cpp"
@@ -14,6 +11,7 @@ add_library(tensor_compiler_lib STATIC
     "passes/passes_pipeline.cpp"
     
     "passes/semantics_inferer_pass/semantics_inferer_pass.cpp"
+    "passes/semantics_inferer_pass/utils.cpp"
     "passes/semantics_inferer_pass/elementwise_binop_inferer.cpp" 
     "passes/semantics_inferer_pass/conv_inferer.cpp" 
     "passes/semantics_inferer_pass/gemm_inferer.cpp" 
@@ -21,13 +19,12 @@ add_library(tensor_compiler_lib STATIC
     "passes/semantics_inferer_pass/relu_inferer.cpp"
     "passes/semantics_inferer_pass/constant_inferer.cpp"
 
-    #"io/out_graph_console.cpp"
     "io/onnx_importer.cpp"
     "io/console_graph_exporter.cpp"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
-)
+ "passes/mlir_conversion_utils.cpp")
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"

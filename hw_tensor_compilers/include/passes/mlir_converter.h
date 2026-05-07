@@ -31,19 +31,30 @@ namespace passes {
             context(context_), builder(&context), graph(graph_) {
         };
 
-        auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
-
-        [[nodiscard]] static auto tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp>;
+        /*
+        *
+        [[nodiscard]]
+        static auto tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp>;
 
         static auto datatype_to_mlir_type(mlir::OpBuilder& builder, const graph_engine::DataType dtype) -> mlir::Type;
 
         static auto get_value_tensor_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph, graph_engine::ValueID value_id) -> mlir::RankedTensorType;
 
         static auto get_function_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph) -> mlir::FunctionType;
+        */
+
+        auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
 
     };
+
+};
+
+/*
+namespace passes {
 
     auto matmul(mlir::Value a, mlir::Value b, mlir::OpBuilder& builder, mlir::Location loc, bool transpose_b) -> mlir::Value;
 
     auto scalar_mul(mlir::Value a, float s, mlir::OpBuilder& builder, mlir::Location loc)->mlir::Value;
-};
+
+}
+*/
