@@ -56,6 +56,8 @@ namespace my_space {
 
         // 2. public methods (snake_case)
         auto do_something() -> void;
+
+        [[nodiscard]] // attributes are on a row above
         auto get_value() const -> int;
 
     private:

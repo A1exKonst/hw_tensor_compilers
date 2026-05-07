@@ -26,6 +26,7 @@ namespace io {
         OnnxImporter(OnnxImporter&&) = default;
         OnnxImporter& operator=(OnnxImporter&&) = default;
 
+        [[nodiscard]]
         auto import_graph() -> graph_engine::Graph override;
     };
 };

@@ -43,6 +43,7 @@ namespace passes {
         static auto get_function_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph) -> mlir::FunctionType;
         */
 
+        [[nodiscard]]
         auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
 
     };
