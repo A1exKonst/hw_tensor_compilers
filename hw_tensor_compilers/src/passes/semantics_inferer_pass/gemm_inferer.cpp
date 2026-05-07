@@ -1,6 +1,9 @@
 #pragma once
 #include "passes/semantics_inferer_pass/gemm_inferer.h"
+#include "passes/semantics_inferer_pass/utils.h"
 #include "graph/graph.h"
+
+
 
 namespace passes::semantics_inferer {
 

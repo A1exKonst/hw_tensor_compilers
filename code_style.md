@@ -23,6 +23,12 @@
 * Do not use `using namespace std;`.
 * Do not use macros.
 
+## Function arguments
+* `const T&` - argument, which is guaranteed "readonly"
+* `T&`       - argument, which will be modified in function body
+* `T`        - argument. Caller object is guaranteed "readonly";
+                         used to create a sinking copy, as in setter-functions
+
 ## Header code example
 ```cpp
 #pragma once

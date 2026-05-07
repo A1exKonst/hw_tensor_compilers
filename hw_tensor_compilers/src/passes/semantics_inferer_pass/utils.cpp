@@ -7,7 +7,7 @@ using namespace graph_engine;
 
 namespace passes::semantics_inferer {
 
-	void transform_node(Graph& graph, const NodeID node_id) {
+	auto transform_node(Graph& graph, const NodeID node_id) -> void {
 		Node& node = graph.nodes.at(node_id);
 		switch (node.op_type) {
 		case OperatorType::ADD:
@@ -263,7 +263,7 @@ namespace passes::semantics_inferer {
 		};
 	};
 
-	void expect_dtype(Graph& graph, const ValueID value_id, const DataType dtype) {
+	auto expect_dtype(Graph& graph, const ValueID value_id, const DataType dtype) -> void {
 		if (graph.values[value_id].dtype == dtype) return;
 
 		if (graph.values[value_id].dtype != DataType::UNDEFINED) {
@@ -276,7 +276,7 @@ namespace passes::semantics_inferer {
 		return;
 	};
 
-	void expect_shape(Graph& graph, const ValueID value_id, Shape shape) {
+	auto expect_shape(Graph& graph, const ValueID value_id, Shape shape) -> void {
 		if (graph.values[value_id].shape == shape) return;
 
 		if (graph.values[value_id].shape.rank() != 0) {
@@ -291,14 +291,14 @@ namespace passes::semantics_inferer {
 		return;
 	};
 
-	void expect(bool assertion, std::string&& error_message) {
+	auto expect(bool assertion, std::string&& error_message) -> void {
 		if (!assertion) {
 			throw std::runtime_error(std::move(error_message));
 		};
 		return;
 	};
 
-	void expect_attribute(Graph& graph, NodeID node_id, const std::string& name, AttributeValue attr) {
+	auto expect_attribute(Graph& graph, NodeID node_id, const std::string& name, AttributeValue attr) -> void {
 		if (graph.nodes.at(node_id).attr.at(name) == attr) return;
 
 		Node& node = graph.nodes[node_id];
@@ -310,7 +310,7 @@ namespace passes::semantics_inferer {
 		return;
 	};
 
-	void insert_type_conversion(Graph& graph, ValueID converted_value_id, DataType new_dtype) {
+	auto insert_type_conversion(Graph& graph, ValueID converted_value_id, DataType new_dtype) -> void {
 		size_t new_value_expected_id = graph.nodes.size();
 		NodeID conversion_node_id = graph.add_node(
 			OperatorType::DTYPE_CONVERSION,		// OperatorType
