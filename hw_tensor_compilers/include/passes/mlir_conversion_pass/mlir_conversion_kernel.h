@@ -13,6 +13,10 @@
 namespace passes {
 	namespace mlir_conversion {
 
+		class MLIRConversionPass;
+
+		class MLIRConversionData;
+
 		/*
 		* Interface class for conversion graph_engine::Graph to mlir::ModuleOp
 		*/
@@ -23,11 +27,12 @@ namespace passes {
 			MLIRConversionKernel(const MLIRConversionKernel& other) = delete;
 			MLIRConversionKernel& operator=(const MLIRConversionKernel&) = delete;
 
-			// auto convert_to_mlir_value()
+			virtual auto convert_graph_value(MLIRConversionData&, graph_engine::ValueID) -> mlir::Value = 0;
 
 		protected:
 			MLIRConversionKernel() = default;
-		}
+
+		};
 
 	}
 

@@ -24,7 +24,7 @@ add_library(tensor_compiler_lib STATIC
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
- "passes/mlir_conversion_utils.cpp")
+ "passes/mlir_conversion_utils.cpp" "passes/mlir_conversion_pass/mlir_conversion_data.cpp")
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"
