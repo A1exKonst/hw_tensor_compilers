@@ -1,5 +1,5 @@
 #pragma once
-#include "passes/semantics_inferer_pass/elementwise_binop_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.h"
 #include "graph/graph.h"
 
 

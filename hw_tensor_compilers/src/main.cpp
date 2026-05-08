@@ -12,10 +12,10 @@
 int main() {
 
 	try {
-		std::string version = "0.2.58";
+		std::string version = "0.2.60";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_relu.onnx";
+		std::string filename = "data/single_mul.onnx";
 		// correct lowering		: gemm, relu, mul, add
 		// incorrect lowering	: conv
 		// no gen				: matmul 

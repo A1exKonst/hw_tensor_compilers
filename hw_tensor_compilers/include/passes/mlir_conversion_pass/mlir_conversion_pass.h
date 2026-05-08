@@ -5,10 +5,11 @@
 #include "graph/graph.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_kernel.h"
 
-#include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/IR/Value.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/MLIRContext.h"
+#include "mlir/IR/OwningOpRef.h"
+#include "mlir/IR/BuiltinOps.h"
 
 
 
@@ -17,7 +18,7 @@ namespace passes
 {
 	class MLIRConversionPass {
 	public:
-		MLIRConversionPass(); // fill registry_
+		MLIRConversionPass(const graph_engine::Graph& graph, mlir::MLIRContext& context); // fill registry_
 		~MLIRConversionPass() = default;
 
 		MLIRConversionPass(const MLIRConversionPass& other) = default;
@@ -42,7 +43,5 @@ namespace passes
 
 		std::unordered_map<graph_engine::ValueID, mlir::Value> value_id_to_mlir_value;
 
-		// use registry to apply to Graph.values
-		auto convert_graph_value_to_mlir_recursively(graph_engine::ValueID value) -> mlir::Value;
 	};
 }

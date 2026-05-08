@@ -2,14 +2,14 @@
 
 #include "passes/semantics_inferer_pass/semantics_inferer_pass.h"
 #include "graph/node.h"
-#include "passes/semantics_inferer_pass/add_inferer.h"
-#include "passes/semantics_inferer_pass/constant_inferer.h"
-#include "passes/semantics_inferer_pass/conv_inferer.h"
-#include "passes/semantics_inferer_pass/elementwise_binop_inferer.h"
-#include "passes/semantics_inferer_pass/gemm_inferer.h"
-#include "passes/semantics_inferer_pass/matmul_inferer.h"
-#include "passes/semantics_inferer_pass/mul_inferer.h"
-#include "passes/semantics_inferer_pass/relu_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/add_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/constant_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/conv_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/mul_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/relu_inferer.h"
 
 using namespace graph_engine;
 

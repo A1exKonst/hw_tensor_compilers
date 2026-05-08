@@ -9,22 +9,32 @@ add_library(tensor_compiler_lib STATIC
     "passes/llvm_mlir_management/set_context.cpp"
     "passes/mlir_pipeline.cpp"
     "passes/passes_pipeline.cpp"
-    
     "passes/semantics_inferer_pass/semantics_inferer_pass.cpp"
     "passes/semantics_inferer_pass/utils.cpp"
-    "passes/semantics_inferer_pass/elementwise_binop_inferer.cpp" 
-    "passes/semantics_inferer_pass/conv_inferer.cpp" 
-    "passes/semantics_inferer_pass/gemm_inferer.cpp" 
-    "passes/semantics_inferer_pass/matmul_inferer.cpp"
-    "passes/semantics_inferer_pass/relu_inferer.cpp"
-    "passes/semantics_inferer_pass/constant_inferer.cpp"
+    "passes/mlir_conversion_utils.cpp"
+    "passes/mlir_conversion_pass/mlir_conversion_data.cpp"
+    "passes/mlir_conversion_pass/mlir_conversion_pass.cpp"
+    
+    "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/conv_inferer.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer.cpp"
+    "graph_operator_kernels/semantics_inferer_kernels/relu_inferer.cpp"
+    "graph_operator_kernels/semantics_inferer_kernels/constant_inferer.cpp"
+
+    "graph_operator_kernels/mlir_conversion_kernels/add_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/constant_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/conv_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/gemm_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/mul_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/relu_conversion_kernel.cpp"
 
     "io/onnx_importer.cpp"
     "io/console_graph_exporter.cpp"
 
     ${PROTO_SRCS}
     ${PROTO_HDRS}
- "passes/mlir_conversion_utils.cpp" "passes/mlir_conversion_pass/mlir_conversion_data.cpp")
+)
 
 target_include_directories(tensor_compiler_lib PUBLIC 
     "${PROJECT_SOURCE_DIR}/hw_tensor_compilers/include"

@@ -1,5 +1,5 @@
 #pragma once
-#include "passes/semantics_inferer_pass/relu_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/relu_inferer.h"
 #include "graph/graph.h"
 #include "passes/semantics_inferer_pass/utils.h"
 
