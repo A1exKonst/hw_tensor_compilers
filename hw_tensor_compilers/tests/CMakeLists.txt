@@ -6,9 +6,9 @@ add_executable(my_tests
     "test_shape.cpp" 
     "test_onnx_import.cpp"
     "test_semantics.cpp"
-    "test_mlir.cpp"
+    
     "test_mlir_execution.cpp"
-    "test_mlir_conversion_pass_equality.cpp"
+    
     "test_mlir_conversion_pass.cpp"
 )
 

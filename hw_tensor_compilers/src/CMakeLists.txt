@@ -7,7 +7,7 @@ set(GRAPH_SOURCES
 )
 
 set(PASSES_SOURCES
-    "passes/mlir_converter.cpp"
+    
     "passes/llvm_mlir_management/set_pipeline.cpp" 
     "passes/llvm_mlir_management/set_context.cpp"
     "passes/mlir_pipeline.cpp"
