@@ -1,4 +1,3 @@
-#pragma once
 #include <unordered_map>
 #include <memory>
 
@@ -66,6 +65,7 @@ namespace passes::mlir_conversion {
 
         result = elementwise_op.getResult(0);
 
+        return result;
 	}
 
 }

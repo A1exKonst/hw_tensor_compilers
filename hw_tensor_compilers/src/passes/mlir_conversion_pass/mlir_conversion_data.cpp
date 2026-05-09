@@ -1,5 +1,9 @@
+#include <iostream>
+#include "io/console_graph_exporter.h"
+
 #include "passes/mlir_conversion_pass/mlir_conversion_data.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_kernel.h"
+#include "passes/mlir_conversion_utils.h"
 
 using namespace graph_engine;
 
@@ -15,7 +19,16 @@ namespace passes::mlir_conversion {
 		}
 
 		OperatorType producer_type = graph.nodes[graph.values[value_id].producer_node_id].op_type;
+
 		mlir::Value result = registry_[producer_type]->convert_graph_value(*this, value_id);
+
+		if (result.getType() != mlir_conversion::get_value_tensor_type(builder, graph, value_id)) {
+			throw std::runtime_error(
+				"MLIRConversionData : expected another mlir::Type for graph_engine::Value " 
+				+ std::to_string(value_id)
+			);
+		}
+
 		value_id_to_mlir_value[value_id] = result;
 		return result;
 	}

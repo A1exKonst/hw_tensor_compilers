@@ -365,6 +365,7 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
         break;
     }
     case OperatorType::MATMUL:
+        [[fallthrough]];
     default:
         throw std::runtime_error(
             "mlir conversion for this operation is not supported: " + 
@@ -373,7 +374,9 @@ auto GraphToMLIRConverter::convert_graph_value_to_mlir_recursively(graph_engine:
     }
 
     // assert result type is same, as given in graph_engine::Value::dtype :
-    if (result.getType() != mlir_conversion::get_value_tensor_type(builder, graph, value)) { throw std::runtime_error("Conversion to MLIR: expected another mlir::Type for graph_engine::Value " + std::to_string(value)); };
+    if (result.getType() != mlir_conversion::get_value_tensor_type(builder, graph, value)) {
+        throw std::runtime_error("Conversion to MLIR: expected another mlir::Type for graph_engine::Value " + std::to_string(value));
+    }
 
     value_id_to_mlir_value[value] = result;
     return result;

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "passes/mlir_conversion_pass/mlir_conversion_pass.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_data.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_kernel.h"
@@ -34,7 +36,8 @@ namespace passes {
 	}
 
 	auto MLIRConversionPass::convert() -> mlir::OwningOpRef<mlir::ModuleOp> {
-        mlir_conversion::MLIRConversionData conversion_storage(context, builder, registry_, graph);
+
+        mlir_conversion::MLIRConversionData conversion_storage(context, builder, registry_, value_id_to_mlir_value, graph);
 
         context.getOrLoadDialect<mlir::func::FuncDialect>();
         context.getOrLoadDialect<mlir::arith::ArithDialect>();
@@ -44,19 +47,18 @@ namespace passes {
         auto loc = builder.getUnknownLoc();
 
         mlir::ModuleOp module = mlir::ModuleOp::create(loc);
+
         builder.setInsertionPointToStart(module.getBody());
 
         mlir::FunctionType func_type = mlir_conversion::get_function_type(builder, graph);
+
         mlir::func::FuncOp func_op = builder.create<mlir::func::FuncOp>(loc, "main", func_type);
+
         func_op->setAttr("llvm.emit_c_interface", builder.getUnitAttr());
 
         mlir::Block* entry_block = func_op.addEntryBlock();
+
         builder.setInsertionPointToStart(entry_block);
-
-        // === void convert_graph_nodes() :
-
-        // todo: add graph.nodes visit
-        // via convert_value_to_mlir_value
 
         if (entry_block->getNumArguments() != graph.inputs.size()) {
             throw std::runtime_error("Conversion to MLIR: Wrong number of inputs in entry_block");
@@ -68,13 +70,13 @@ namespace passes {
 
         for (ValueID output : graph.outputs) {
             conversion_storage.convert_graph_value(output);
-            // convert_graph_value_to_mlir_recursively(output);
         }
 
         std::vector<mlir::Value> return_values;
         for (ValueID output : graph.outputs) {
             return_values.push_back(value_id_to_mlir_value[output]);
         }
+
         builder.create<mlir::func::ReturnOp>(loc, return_values);
 
         return mlir::OwningOpRef<mlir::ModuleOp>(module);

@@ -10,6 +10,7 @@ namespace passes::semantics_inferer {
 		Node& node = graph.nodes.at(node_id);
 		switch (node.op_type) {
 		case OperatorType::ADD:
+			[[fallthrough]];
 		case OperatorType::MUL: {
 			expect(node.inputs.size() == 2, "Node[Add || Mul] : two input Values are expected");
 			expect(node.outputs.size() == 1, "Node[Add || Mul] : one output Value is expected");
