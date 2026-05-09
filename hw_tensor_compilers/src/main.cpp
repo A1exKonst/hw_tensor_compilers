@@ -12,7 +12,7 @@
 int main() {
 
 	try {
-		std::string version = "0.2.72";
+		std::string version = "0.2.73";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_add.onnx";

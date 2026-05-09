@@ -19,12 +19,12 @@ TEST(MLIRPipeline, SingleMulModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 }
 
@@ -35,12 +35,12 @@ TEST(MLIRPipeline, SingleAddModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -51,12 +51,12 @@ TEST(MLIRPipeline, SingleReluModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -67,12 +67,12 @@ TEST(MLIRPipeline, SingleMatMulModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -83,12 +83,12 @@ TEST(MLIRPipeline, SingleConvModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -99,12 +99,12 @@ TEST(MLIRPipeline, SingleGemmModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -115,11 +115,11 @@ TEST(MLIRPipeline, TinyModel) {
     EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
 
     mlir::MLIRContext context;
-    passes::llvm_mlir_management::set_context(context);
+    passes::mlir_management::set_context(context);
     passes::MLIRConversionPass conversion_pass(graph, context);
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };

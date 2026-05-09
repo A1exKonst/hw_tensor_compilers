@@ -17,7 +17,7 @@ TEST(MLIRExecution, TensorDescriptorInitialization_1) {
 	graph_engine::Shape s = graph_engine::Shape::make_shape({ 10 });
 	std::vector<float> data{ 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
 	graph_engine::Tensor<float> tensor = graph_engine::Tensor<float>::make_tensor(data, std::move(s));
-	StridedMemRefType<float, 1> descriptor = passes::llvm_mlir_management::make_descriptor<float, 1>(tensor);
+	StridedMemRefType<float, 1> descriptor = passes::mlir_management::make_descriptor<float, 1>(tensor);
 
 	EXPECT_EQ(descriptor.basePtr, tensor.data().data());
 	EXPECT_EQ(descriptor.data, tensor.data().data());
@@ -30,7 +30,7 @@ TEST(MLIRExecution, TensorDescriptorInitialization_2) {
 	graph_engine::Shape s = graph_engine::Shape::make_shape({ 2, 5 });
 	std::vector<float> data{ 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
 	graph_engine::Tensor<float> tensor = graph_engine::Tensor<float>::make_tensor(data, std::move(s));
-	StridedMemRefType<float, 2> descriptor = passes::llvm_mlir_management::make_descriptor<float, 2>(tensor);
+	StridedMemRefType<float, 2> descriptor = passes::mlir_management::make_descriptor<float, 2>(tensor);
 
 	EXPECT_EQ(descriptor.basePtr, tensor.data().data());
 	EXPECT_EQ(descriptor.data, tensor.data().data());
@@ -45,7 +45,7 @@ TEST(MLIRExecution, TensorDescriptorInitialization_3) {
 	graph_engine::Shape s = graph_engine::Shape::make_shape({ 2, 3, 2 });
 	std::vector<float> data{ 0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11 };
 	graph_engine::Tensor<float> tensor = graph_engine::Tensor<float>::make_tensor(data, std::move(s));
-	StridedMemRefType<float, 3> descriptor = passes::llvm_mlir_management::make_descriptor<float, 3>(tensor);
+	StridedMemRefType<float, 3> descriptor = passes::mlir_management::make_descriptor<float, 3>(tensor);
 
 	EXPECT_EQ(descriptor.basePtr, tensor.data().data());
 	EXPECT_EQ(descriptor.data, tensor.data().data());
