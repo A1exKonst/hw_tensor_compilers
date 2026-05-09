@@ -24,7 +24,7 @@ TEST(MLIRPipeline, SingleMulModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 }
 
@@ -40,7 +40,7 @@ TEST(MLIRPipeline, SingleAddModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -56,7 +56,7 @@ TEST(MLIRPipeline, SingleReluModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -72,7 +72,7 @@ TEST(MLIRPipeline, SingleMatMulModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -88,7 +88,7 @@ TEST(MLIRPipeline, SingleConvModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -104,7 +104,7 @@ TEST(MLIRPipeline, SingleGemmModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
@@ -120,6 +120,6 @@ TEST(MLIRPipeline, TinyModel) {
     mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
-    mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
+    mlir::LogicalResult result = passes::llvm_mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };

@@ -67,7 +67,7 @@ namespace passes {
 		if (endpoint == PipelineEndpoint::MLIR_GENERATION) return;
 
 		std::cout << "================ mlir -> llvm ====================================" << std::endl;
-		passes::MLIRPipeline::lower_to_llvm(*model, debug);
+		passes::llvm_mlir_management::lower_to_llvm(*model, debug);
 		std::cout << std::endl;
 		model->dump();
 		if (endpoint == PipelineEndpoint::MLIR_LOWERING) return;

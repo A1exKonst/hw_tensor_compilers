@@ -6,9 +6,9 @@
 
 
 
-namespace passes {
+namespace passes::llvm_mlir_management {
 
-	auto MLIRPipeline::lower_to_llvm(mlir::ModuleOp model, bool ir_printing) -> mlir::LogicalResult {
+	auto lower_to_llvm(mlir::ModuleOp model, bool ir_printing) -> mlir::LogicalResult {
 		mlir::PassManager pm{ model->getContext() };
 		llvm_mlir_management::set_pipeline(pm);
 
