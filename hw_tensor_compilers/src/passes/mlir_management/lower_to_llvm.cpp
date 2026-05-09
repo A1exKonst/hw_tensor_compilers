@@ -1,4 +1,6 @@
-#include "passes/mlir_pipeline.h"
+#include "passes/mlir_management/lower_to_llvm.h"
+#include "passes/mlir_management/set_context.h"
+#include "passes/mlir_management/set_pipeline.h"
 
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/Pass/PassManager.h"
@@ -6,11 +8,11 @@
 
 
 
-namespace passes::llvm_mlir_management {
+namespace passes::mlir_management {
 
 	auto lower_to_llvm(mlir::ModuleOp model, bool ir_printing) -> mlir::LogicalResult {
 		mlir::PassManager pm{ model->getContext() };
-		llvm_mlir_management::set_pipeline(pm);
+		mlir_management::set_pipeline(pm);
 
 		if (ir_printing) {
 			pm.getContext()->disableMultithreading();
@@ -29,4 +31,5 @@ namespace passes::llvm_mlir_management {
 		auto result = pm.run(model);
 		return result;
 	};
+
 }

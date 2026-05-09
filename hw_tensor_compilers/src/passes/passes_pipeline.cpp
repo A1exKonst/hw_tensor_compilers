@@ -11,6 +11,7 @@
 #include "mlir/ExecutionEngine/ExecutionEngine.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
 #include "llvm/Support/TargetSelect.h"
+#include "mlir/ExecutionEngine/CRunnerUtils.h"
 
 
 #include "llvm/Support/DynamicLibrary.h"
@@ -58,7 +59,7 @@ namespace passes {
 
 		std::cout << "================ graph -> mlir ====================================" << std::endl;
 		mlir::MLIRContext context;
-		passes::llvm_mlir_management::set_context(context);
+		passes::mlir_management::set_context(context);
 		mlir::OwningOpRef<mlir::ModuleOp> model = passes::MLIRConversionPass(graph, context).convert();
 		//mlir::OwningOpRef<mlir::ModuleOp> model = passes::mlir_conversion::tranform_graph(context, graph);
 		// mlir::OwningOpRef<mlir::ModuleOp> model = passes::GraphToMLIRConverter::tranform_graph(context, graph);
@@ -67,7 +68,7 @@ namespace passes {
 		if (endpoint == PipelineEndpoint::MLIR_GENERATION) return;
 
 		std::cout << "================ mlir -> llvm ====================================" << std::endl;
-		passes::llvm_mlir_management::lower_to_llvm(*model, debug);
+		passes::mlir_management::lower_to_llvm(*model, debug);
 		std::cout << std::endl;
 		model->dump();
 		if (endpoint == PipelineEndpoint::MLIR_LOWERING) return;
@@ -99,7 +100,7 @@ namespace passes {
 		graph_engine::Shape input_s = graph_engine::Shape::make_shape({ 1, 10 });
 		std::vector<float> input_data{ 0, -1, 2, -3, 4, -5, 6, -7, 8, -9 };
 		graph_engine::Tensor<float> input_tensor = graph_engine::Tensor<float>::make_tensor(input_data, std::move(input_s));
-		StridedMemRefType<float, 2> input_descriptor = passes::llvm_mlir_management::make_descriptor<float, 2>(input_tensor);
+		StridedMemRefType<float, 2> input_descriptor = passes::mlir_management::make_descriptor<float, 2>(input_tensor);
 
 		StridedMemRefType<float, 2> result_placeholder;
 

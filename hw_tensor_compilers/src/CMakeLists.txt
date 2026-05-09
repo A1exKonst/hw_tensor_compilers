@@ -8,9 +8,9 @@ set(GRAPH_SOURCES
 
 set(PASSES_SOURCES
     
-    "passes/llvm_mlir_management/set_pipeline.cpp" 
-    "passes/llvm_mlir_management/set_context.cpp"
-    "passes/llvm_mlir_management/mlir_pipeline.cpp"
+    "passes/mlir_management/set_pipeline.cpp" 
+    "passes/mlir_management/set_context.cpp"
+    "passes/mlir_management/lower_to_llvm.cpp"
     "passes/passes_pipeline.cpp"
 
     "passes/semantics_inferer_pass/semantics_inferer_pass.cpp"

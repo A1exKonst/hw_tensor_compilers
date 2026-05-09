@@ -7,7 +7,7 @@
 
 
 
-namespace passes::llvm_mlir_management {
+namespace passes::mlir_management {
 
 	template<typename DType>
 	graph_engine::Tensor<DType> execute(graph_engine::Tensor<DType>& input, mlir::ModuleOp& model, mlir::ExecutionEngine& engine);

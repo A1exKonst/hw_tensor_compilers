@@ -7,7 +7,7 @@
 
 
 
-namespace passes::llvm_mlir_management {
+namespace passes::mlir_management {
 
 	template<typename DType, int N>
 	StridedMemRefType<DType, N> make_descriptor(graph_engine::Tensor<DType>& tensor) {

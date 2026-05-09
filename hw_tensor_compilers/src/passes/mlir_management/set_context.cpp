@@ -1,4 +1,4 @@
-#include "passes/llvm_mlir_management/set_context.h"
+#include "passes/mlir_management/set_context.h"
 
 #include "mlir/Target/LLVMIR/Dialect/Builtin/BuiltinToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
@@ -22,9 +22,8 @@
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/Dialect/SCF/Transforms/BufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/Tensor/Transforms/BufferizableOpInterfaceImpl.h"
-//#include "mlir/Dialect/Tensor/IR/TensorTilingInterface.h" 
 
-namespace passes::llvm_mlir_management {
+namespace passes::mlir_management {
 
 	void set_context(mlir::MLIRContext& context) {
 		mlir::DialectRegistry registry;

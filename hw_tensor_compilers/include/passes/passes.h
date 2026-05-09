@@ -1,7 +1,7 @@
 #pragma once
 #include "passes/semantics_inferer_pass/semantics_inferer_pass.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_pass.h"
+#include "passes/mlir_management/mlir_management.h"
 #include "passes/mlir_conversion_pass/utils.h"
-#include "passes/mlir_pipeline.h"
 #include "passes/passes_pipeline.h"
 #include "passes/pipeline_endpoint.h"

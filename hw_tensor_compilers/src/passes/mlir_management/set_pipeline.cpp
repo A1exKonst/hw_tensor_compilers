@@ -1,4 +1,4 @@
-#include "passes/llvm_mlir_management/set_pipeline.h"
+#include "passes/mlir_management/set_pipeline.h"
 
 #include "mlir/Target/LLVMIR/Dialect/Builtin/BuiltinToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
@@ -28,7 +28,7 @@
 #include "mlir/Dialect/MemRef/Transforms/Passes.h"
 //#include "mlir/Dialect/Tensor/IR/TensorTilingInterface.h" 
 
-namespace passes::llvm_mlir_management {
+namespace passes::mlir_management {
 
 	void set_pipeline(mlir::PassManager& pm) {
 

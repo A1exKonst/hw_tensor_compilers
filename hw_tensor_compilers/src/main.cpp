@@ -5,14 +5,14 @@
 #include "io/io.h"
 #include "passes/passes.h"
 #include "graph/graph_engine.h"
-#include "passes/llvm_mlir_management/llvm_mlir_management.h"
+#include "passes/mlir_management/mlir_management.h"
 
 
 
 int main() {
 
 	try {
-		std::string version = "0.2.71";
+		std::string version = "0.2.72";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_add.onnx";
