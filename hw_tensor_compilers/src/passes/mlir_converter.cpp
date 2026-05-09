@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "passes/mlir_converter.h"
-#include "passes/mlir_conversion_utils.h"
+#include "passes/mlir_conversion_pass/utils.h"
 
 #include "mlir/IR/Operation.h"
 #include "mlir/IR/AffineMap.h"

@@ -3,7 +3,7 @@
 #include "passes/mlir_conversion_pass/mlir_conversion_pass.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_data.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_kernel.h"
-#include "passes/mlir_conversion_utils.h"
+#include "passes/mlir_conversion_pass/utils.h"
 
 #include "graph_operator_kernels/mlir_conversion_kernels/add_conversion_kernel.h"
 #include "graph_operator_kernels/mlir_conversion_kernels/constant_conversion_kernel.h"

@@ -3,7 +3,7 @@
 
 #include "passes/mlir_conversion_pass/mlir_conversion_data.h"
 #include "passes/mlir_conversion_pass/mlir_conversion_kernel.h"
-#include "passes/mlir_conversion_utils.h"
+#include "passes/mlir_conversion_pass/utils.h"
 
 using namespace graph_engine;
 

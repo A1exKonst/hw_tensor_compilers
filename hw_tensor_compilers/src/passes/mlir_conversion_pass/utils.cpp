@@ -2,8 +2,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "passes/mlir_conversion_utils.h"
-#include "passes/mlir_converter.h"
+#include "passes/mlir_conversion_pass/utils.h"
+#include "passes/mlir_conversion_pass/mlir_conversion_pass.h"
 #include "graph/graph.h"
 
 #include "mlir/IR/Builders.h"
@@ -21,8 +21,8 @@ using LinalgRegionBuilder = std::function<void(mlir::OpBuilder&, mlir::Location,
 namespace passes::mlir_conversion {
 
     auto tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp> {
-        GraphToMLIRConverter converter{ context_, graph_ };
-        mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+        MLIRConversionPass conversion_pass{graph_, context_ };
+        mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
         return model;
     }
 

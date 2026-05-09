@@ -14,7 +14,7 @@ set(PASSES_SOURCES
     "passes/passes_pipeline.cpp"
     "passes/semantics_inferer_pass/semantics_inferer_pass.cpp"
     "passes/semantics_inferer_pass/utils.cpp"
-    "passes/mlir_conversion_utils.cpp"
+    "passes/mlir_conversion_pass/utils.cpp"
     "passes/mlir_conversion_pass/mlir_conversion_data.cpp"
     "passes/mlir_conversion_pass/mlir_conversion_pass.cpp"
 )

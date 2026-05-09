@@ -11,7 +11,8 @@
 
 namespace passes {
 
-    class GraphToMLIRConverter {
+    
+    class [[deprecated("Use passes/mlir_conversion_pass/mlir_conversion_pass.h passes::MLIRConversionPass")]] GraphToMLIRConverter {
     private:
         const graph_engine::Graph& graph;
 

@@ -27,6 +27,7 @@ namespace passes
 		MLIRConversionPass& operator=(const MLIRConversionPass&) = default;
 		MLIRConversionPass& operator=(MLIRConversionPass&&) = default;
 
+		[[nodiscard]]
 		auto convert() -> mlir::OwningOpRef<mlir::ModuleOp>;
 
 	private:
