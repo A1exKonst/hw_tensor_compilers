@@ -3,8 +3,6 @@
 
 namespace passes::semantics_inferer {
 
-	[[deprecated]] auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void;
-
 	auto expect_dtype(graph_engine::Graph& graph, const graph_engine::ValueID value_id, const graph_engine::DataType dtype) -> void;
 
 	auto expect_shape(graph_engine::Graph& graph, const graph_engine::ValueID value_id, graph_engine::Shape shape) -> void;

@@ -16,10 +16,13 @@ namespace passes::mlir_conversion {
     [[nodiscard]] 
     auto tranform_graph(mlir::MLIRContext& context_, const graph_engine::Graph& graph_) -> mlir::OwningOpRef<mlir::ModuleOp>;
 
+    [[nodiscard]]
     auto datatype_to_mlir_type(mlir::OpBuilder& builder, const graph_engine::DataType dtype) -> mlir::Type;
 
+    [[nodiscard]]
     auto get_value_tensor_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph, graph_engine::ValueID value_id) -> mlir::RankedTensorType;
 
+    [[nodiscard]]
     auto get_function_type(mlir::OpBuilder& builder, const graph_engine::Graph& graph) -> mlir::FunctionType;
 
     auto matmul(mlir::Value a, mlir::Value b, mlir::OpBuilder& builder, mlir::Location loc, bool transpose_b) -> mlir::Value;

@@ -7,6 +7,7 @@
 
 namespace passes::mlir_management {
 
+	[[nodiscard]]
 	auto lower_to_llvm(mlir::ModuleOp model, bool ir_printing) -> mlir::LogicalResult;
 
 }
