@@ -20,7 +20,7 @@ namespace passes::mlir_conversion {
 
 		OperatorType producer_type = graph.nodes[graph.values[value_id].producer_node_id].op_type;
 
-		mlir::Value result = registry_[producer_type]->convert_graph_value(*this, value_id);
+		mlir::Value result = registry_.at(producer_type)->convert_graph_value(*this, value_id);
 
 		if (result.getType() != mlir_conversion::get_value_tensor_type(builder, graph, value_id)) {
 			throw std::runtime_error(

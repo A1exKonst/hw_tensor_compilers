@@ -12,7 +12,7 @@
 
 
 
-TEST(MLIRPipelineConverter, SingleMulModel) {
+TEST(MLIRPipeline, SingleMulModel) {
     std::string filename = "data/single_mul.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -20,15 +20,15 @@ TEST(MLIRPipelineConverter, SingleMulModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 }
 
-TEST(MLIRPipelineConverter, SingleAddModel) {
+TEST(MLIRPipeline, SingleAddModel) {
     std::string filename = "data/single_add.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -36,15 +36,15 @@ TEST(MLIRPipelineConverter, SingleAddModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRPipelineConverter, SingleReluModel) {
+TEST(MLIRPipeline, SingleReluModel) {
     std::string filename = "data/single_relu.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -52,15 +52,15 @@ TEST(MLIRPipelineConverter, SingleReluModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRPipelineConverter, SingleMatMulModel) {
+TEST(MLIRPipeline, SingleMatMulModel) {
     std::string filename = "data/single_matmul.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -68,15 +68,15 @@ TEST(MLIRPipelineConverter, SingleMatMulModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRPipelineConverter, SingleConvModel) {
+TEST(MLIRPipeline, SingleConvModel) {
     std::string filename = "data/single_conv.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -84,15 +84,15 @@ TEST(MLIRPipelineConverter, SingleConvModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRPipelineConverter, SingleGemmModel) {
+TEST(MLIRPipeline, SingleGemmModel) {
     std::string filename = "data/single_gemm.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -100,15 +100,15 @@ TEST(MLIRPipelineConverter, SingleGemmModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
-TEST(MLIRPipelineConverter, TinyModel) {
+TEST(MLIRPipeline, TinyModel) {
     std::string filename = "data/tiny.onnx";
 
     graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
@@ -116,8 +116,8 @@ TEST(MLIRPipelineConverter, TinyModel) {
 
     mlir::MLIRContext context;
     passes::llvm_mlir_management::set_context(context);
-    passes::GraphToMLIRConverter converter{ context, graph };
-    mlir::OwningOpRef<mlir::ModuleOp> model = converter.convert();
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
     EXPECT_TRUE(mlir::succeeded(model->verify()));
 
     mlir::LogicalResult result = passes::MLIRPipeline::lower_to_llvm(*model, false);

@@ -9,6 +9,7 @@ add_executable(my_tests
     "test_mlir.cpp"
     "test_mlir_execution.cpp"
     "test_mlir_conversion_pass_equality.cpp"
+    "test_mlir_conversion_pass.cpp"
 )
 
 target_link_libraries(my_tests 
