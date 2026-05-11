@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(BUILD_COMPILER "Build tensor compiler" ON)
-option(BUILD_LECTURE_HW "Build lecture homeworks" OFF)
 option(BUILD_TESTING "Build tests" ON)
 
 if(BUILD_COMPILER)
@@ -33,9 +32,4 @@ if(BUILD_COMPILER)
         file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/hw_tensor_compilers/data" 
                 DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif()
-
-endif()
-
-if(BUILD_LECTURE_HW)
-    add_subdirectory(lecture_homeworks)
 endif()
