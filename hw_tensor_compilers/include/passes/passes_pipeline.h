@@ -32,6 +32,7 @@ namespace passes {
         io::GraphImporter& importer;
         io::GraphExporter& exporter;
         std::vector<std::unique_ptr<GraphPass>> graph_passes;
+
     };
 
 }

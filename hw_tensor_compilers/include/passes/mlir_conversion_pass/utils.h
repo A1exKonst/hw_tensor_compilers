@@ -28,4 +28,5 @@ namespace passes::mlir_conversion {
     auto matmul(mlir::Value a, mlir::Value b, mlir::OpBuilder& builder, mlir::Location loc, bool transpose_b) -> mlir::Value;
 
     auto scalar_mul(mlir::Value a, float s, mlir::OpBuilder& builder, mlir::Location loc) -> mlir::Value;
-};
+
+}

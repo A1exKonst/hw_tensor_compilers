@@ -72,12 +72,12 @@ namespace passes::semantics_inferer {
 		expect((kernel_shape.size() == spatial_rank), "Node[Conv] : kernel_shape.size() != spatial_rank");
 		for (int i = 0; i < kernel_shape.size(); ++i) {
 			expect(graph.values[w_id].shape[i + 2] == kernel_shape[i], "Node[Conv] : kernel_shape != W[2:]");
-		};
+		}
 		expect(graph.values[x_id].shape[1] / group == graph.values[w_id].shape[1], "Node[Conv] : W[1] != C / group");
 		if (is_b_initialized) {
 			expect(graph.values[b_id].shape.rank() == 1, "Node[Conv] : B.rank != 1");
 			expect(graph.values[b_id].shape[0] == graph.values[w_id].shape[0], "Node[Conv] : B.shape[0] != M");
-		};
+		}
 
 		// form Y shape:
 		y_shape[0] = N;
@@ -104,5 +104,7 @@ namespace passes::semantics_inferer {
 		}
 
 		expect_shape(graph, y_id, y_shape);
-	};
+		return;
+	}
+
 }

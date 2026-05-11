@@ -25,7 +25,7 @@
 
 namespace passes::mlir_management {
 
-	void set_context(mlir::MLIRContext& context) {
+	auto set_context(mlir::MLIRContext& context) -> void {
 		mlir::DialectRegistry registry;
 		registry.insert<
 			mlir::linalg::LinalgDialect,					// linalg dialect
@@ -49,6 +49,8 @@ namespace passes::mlir_management {
 
 		context.appendDialectRegistry(registry);
 		context.loadAllAvailableDialects();
+
+		return;
 	}
 
 }

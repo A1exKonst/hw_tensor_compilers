@@ -5,6 +5,8 @@
 
 #include "graph/graph.h"
 
+
+
 std::ostream& operator<< (std::ostream& out, const graph_engine::AttributeValue& attr);
 
 std::ostream& operator<< (std::ostream& out, const graph_engine::Attributes& attrs);

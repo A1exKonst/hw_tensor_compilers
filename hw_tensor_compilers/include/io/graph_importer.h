@@ -4,6 +4,7 @@
 
 
 namespace io {
+
     /**
     * Interface class of different possible imports for class graph_engine::Graph
     */
@@ -17,5 +18,7 @@ namespace io {
 
     protected:
         GraphImporter() = default;
+
     };
-};
+
+}

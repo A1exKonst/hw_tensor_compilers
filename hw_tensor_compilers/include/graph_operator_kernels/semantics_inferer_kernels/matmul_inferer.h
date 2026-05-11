@@ -12,4 +12,5 @@ namespace passes::semantics_inferer {
 
 		auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void override;
 	};
+
 }

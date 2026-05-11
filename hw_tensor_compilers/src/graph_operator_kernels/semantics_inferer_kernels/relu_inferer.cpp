@@ -15,6 +15,8 @@ namespace passes::semantics_inferer {
 		expect(node.inputs.size() == 1, "Node[Relu] : one input Value is expected");
 		expect_dtype(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).dtype); // expect equal dtypes
 		expect_shape(graph, node.outputs.at(0), graph.values.at(node.inputs.at(0)).shape); // expect equal shapes
-	};
+
+		return;
+	}
 
 }

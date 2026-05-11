@@ -24,4 +24,4 @@ namespace graph_engine {
         {graph_engine::DataType::BOOL,"BOOL"},  {graph_engine::DataType::FLOAT32,"FLOAT32"},
         {graph_engine::DataType::INT64,"INT64"},{graph_engine::DataType::UNDEFINED,"UNDEF_DTYPE"}
     };
-};
+}

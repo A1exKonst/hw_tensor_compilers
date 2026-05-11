@@ -1,5 +1,5 @@
 #pragma once
-#include "graph/attributes.hpp"
+#include "graph/attributes.h"
 #include "graph/datatype.h"
 #include "graph/graph.h"
 #include "graph/node.h"

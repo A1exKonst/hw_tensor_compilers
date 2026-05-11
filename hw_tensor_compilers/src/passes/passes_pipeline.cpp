@@ -35,15 +35,19 @@ extern "C" {
 }
 */
 
-static void my_jit_copy_stub(int64_t elemSize, void* s1, void* s2, int64_t s3,
-	void* d1, void* d2, int64_t d3, int64_t size) {
-	// Минимальная реализация для JIT
+static auto my_jit_copy_stub(
+	int64_t elemSize, void* s1, void* s2, int64_t s3,
+	void* d1, void* d2, int64_t d3, int64_t size
+) -> void {
+	// minimal support for JIT
 	std::memcpy(d2, s2, size * elemSize);
+	return;
 }
 
 
 namespace passes {
-	void PassesPipeline::apply_pipeline(passes::PipelineEndpoint endpoint, bool debug) {
+
+	auto PassesPipeline::apply_pipeline(passes::PipelineEndpoint endpoint, bool debug) -> void {
 		std::cout << "================ onnx -> graph ====================================" << std::endl;
 		graph_engine::Graph graph = importer.import_graph();
 		exporter << graph;
@@ -61,14 +65,13 @@ namespace passes {
 		mlir::MLIRContext context;
 		passes::mlir_management::set_context(context);
 		mlir::OwningOpRef<mlir::ModuleOp> model = passes::MLIRConversionPass(graph, context).convert();
-		//mlir::OwningOpRef<mlir::ModuleOp> model = passes::mlir_conversion::tranform_graph(context, graph);
-		// mlir::OwningOpRef<mlir::ModuleOp> model = passes::GraphToMLIRConverter::tranform_graph(context, graph);
 		std::cout << "Module is " << (mlir::succeeded(model->verify()) ? "valid" : "INVALID") << std::endl;
 		model->dump();
 		if (endpoint == PipelineEndpoint::MLIR_GENERATION) return;
 
 		std::cout << "================ mlir -> llvm ====================================" << std::endl;
-		passes::mlir_management::lower_to_llvm(*model, debug);
+		mlir::LogicalResult is_lowered = passes::mlir_management::lower_to_llvm(*model, debug);
+		if (mlir::failed(is_lowered)) return;
 		std::cout << std::endl;
 		model->dump();
 		if (endpoint == PipelineEndpoint::MLIR_LOWERING) return;
@@ -124,5 +127,6 @@ namespace passes {
 		StridedMemRefType<float, 2> output_descriptor = passes::llvm_mlir_management::make_descriptor<float, 2>(output_tensor);
 		*/
 		
-	};
+	}
+
 }

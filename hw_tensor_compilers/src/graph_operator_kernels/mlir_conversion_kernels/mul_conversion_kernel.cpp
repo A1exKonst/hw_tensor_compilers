@@ -26,11 +26,8 @@ namespace passes::mlir_conversion {
 
         mlir::Value result;
 
-        // result = create_binary_operation<mlir::arith::MulIOp, mlir::arith::MulFOp>(producer_node);
         mlir::Value lhs = storage.convert_graph_value(graph.nodes[producer_node].inputs[0]);
         mlir::Value rhs = storage.convert_graph_value(graph.nodes[producer_node].inputs[1]);
-        //mlir::Value lhs = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[0]);
-        //mlir::Value rhs = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[1]);
         auto tensor_type = lhs.getType().cast<mlir::RankedTensorType>();
         auto shape = tensor_type.getShape();
         int64_t rank = tensor_type.getRank();
@@ -70,4 +67,5 @@ namespace passes::mlir_conversion {
 
         return result;
 	}
+
 }

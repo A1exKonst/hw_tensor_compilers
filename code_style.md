@@ -70,7 +70,7 @@ namespace my_space {
     };
 
 	auto do_action() -> void;
-};
+}
 ```
 
 
@@ -101,5 +101,5 @@ namespace my_space {
 
 	auto do_action() -> void{
     }
-};
+}
 ```

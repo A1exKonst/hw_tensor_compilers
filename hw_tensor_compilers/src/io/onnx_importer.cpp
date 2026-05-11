@@ -93,7 +93,7 @@ namespace io {
             shape[i] = onnx_shape.dim(i).dim_value();
         }
         return g.add_value(std::move(shape), map_dtype(info.type().tensor_type().elem_type()), size_t(-1));
-    };
+    }
 
     auto OnnxImporter::import_graph() -> graph_engine::Graph {
 
@@ -103,7 +103,7 @@ namespace io {
 
         if (!model_file.is_open()) {
             throw std::runtime_error("Exception: could not open file " + filename_);
-        };
+        }
 
         std::ifstream input{ filename_, std::ios::binary };
 
@@ -134,14 +134,14 @@ namespace io {
             ValueID val_id = convert_value_info(input, graph);
             name_to_value_id[input.name()] = val_id;
             graph.inputs.push_back(val_id);
-        };
+        }
 
         // ================ add output Values =============================
         for (const onnx::ValueInfoProto& output : onnx_graph.output()) {
             ValueID val_id = convert_value_info(output, graph);
             name_to_value_id[output.name()] = val_id;
             graph.outputs.push_back(val_id);
-        };
+        }
 
         // ================ add weight Values ============================
         for (const auto& initializer : onnx_graph.initializer()) {
@@ -156,7 +156,7 @@ namespace io {
 
             Shape shape;
             shape.rank(initializer.dims().size());
-            for (int i = 0; i < initializer.dims().size(); ++i) { shape[i] = initializer.dims().at(i); };
+            for (int i = 0; i < initializer.dims().size(); ++i) { shape[i] = initializer.dims().at(i); }
 
             int32_t onnx_dtype = initializer.data_type();
             DataType dtype = map_dtype(onnx_dtype);
@@ -166,7 +166,7 @@ namespace io {
             graph.nodes.push_back(new_weight_node);
 
             name_to_value_id[initializer.name()] = new_value_id;
-        };
+        }
 
         // ================ add Nodes ====================================
         for (const auto& onnx_node : onnx_graph.node()) {
@@ -178,14 +178,16 @@ namespace io {
                     ValueID input_value_id = name_to_value_id.at(input_value_name);
                     inputs.push_back(input_value_id);
                 }
-                else { throw std::runtime_error("Input Value expected, but no such value_name found: " + input_value_name); };
-            };
+                else { 
+                    throw std::runtime_error("Input Value expected, but no such value_name found: " + input_value_name); 
+                }
+            }
 
             // parse Node attributes
             Attributes attrs;
             for (const auto& attr : onnx_node.attribute()) {
                 attrs[attr.name()] = parse_attribute(attr);
-            };
+            }
 
             // add parsed Node to Graph
             const std::string& op_type_name = onnx_node.op_type();
@@ -201,7 +203,7 @@ namespace io {
                 }
                 else {
                     output_value_id = graph.add_value({}, DataType::UNDEFINED, new_node_id);
-                };
+                }
 
                 graph.nodes[new_node_id].outputs.push_back(output_value_id);
                 name_to_value_id[output_value_name] = output_value_id;
@@ -209,5 +211,6 @@ namespace io {
         }
 
         return graph;
-    };
-};
+    }
+
+}

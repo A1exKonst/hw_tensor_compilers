@@ -59,7 +59,7 @@ namespace passes::mlir_conversion {
             loc,
             result_type,
             mlir::ValueRange{ alpha_result, beta_result },
-            alpha_result, // выходной тензор для инициализации (out-of-place)
+            alpha_result, // output initialization tensor (out-of-place)
             indexing_maps,
             iterators,
             [&](mlir::OpBuilder& b, mlir::Location loc, mlir::ValueRange args) {
@@ -70,4 +70,5 @@ namespace passes::mlir_conversion {
 
         return result;
 	}
+
 }

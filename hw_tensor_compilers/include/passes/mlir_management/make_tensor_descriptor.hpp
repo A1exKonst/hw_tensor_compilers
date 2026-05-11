@@ -33,6 +33,6 @@ namespace passes::mlir_management {
         descriptor.offset = 0;
 
         return descriptor;
-	};
+	}
 
 }

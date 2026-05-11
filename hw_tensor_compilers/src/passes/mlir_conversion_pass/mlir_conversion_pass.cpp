@@ -51,9 +51,7 @@ namespace passes {
         builder.setInsertionPointToStart(module.getBody());
 
         mlir::FunctionType func_type = mlir_conversion::get_function_type(builder, graph);
-
         mlir::func::FuncOp func_op = builder.create<mlir::func::FuncOp>(loc, "main", func_type);
-
         func_op->setAttr("llvm.emit_c_interface", builder.getUnitAttr());
 
         mlir::Block* entry_block = func_op.addEntryBlock();

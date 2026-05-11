@@ -15,11 +15,11 @@ namespace passes::semantics_inferer {
 			throw std::runtime_error("V" + std::to_string(value_id)
 				+ ": expected DataType::" + data_type_to_str.at(dtype)
 				+ " but DataType::" + data_type_to_str.at(graph.values[value_id].dtype) + " found.");
-		};
+		}
 
 		graph.values[value_id].dtype = dtype;
 		return;
-	};
+	}
 
 	auto expect_shape(Graph& graph, const ValueID value_id, Shape shape) -> void {
 		if (graph.values[value_id].shape == shape) return;
@@ -30,11 +30,11 @@ namespace passes::semantics_inferer {
 
 			throw std::runtime_error("V" + std::to_string(value_id)
 				+ ": tried to initialize Shape, when it is already initialized");
-		};
+		}
 
 		graph.values[value_id].shape = std::move(shape);
 		return;
-	};
+	}
 
 	auto expect(bool assertion, std::string error_message) -> void {
 		if (!assertion) {
@@ -50,10 +50,10 @@ namespace passes::semantics_inferer {
 		if (node.attr.find(name) != node.attr.end()) {
 			throw std::runtime_error("N" + std::to_string(node_id) +
 				": tried to initialize attribute '" + name + "', when it is already initialized");
-		};
+		}
 		node.attr[name] = std::move(attr);
 		return;
-	};
+	}
 
 	auto insert_type_conversion(Graph& graph, ValueID converted_value_id, DataType new_dtype) -> void {
 		size_t new_value_expected_id = graph.nodes.size();
@@ -71,6 +71,6 @@ namespace passes::semantics_inferer {
 
 		graph.nodes[conversion_node_id].inputs.push_back(new_value_id);
 		return;
-	};
+	}
 
 }

@@ -14,7 +14,9 @@ namespace passes::mlir_conversion {
 
 	class ConstantConversionKernel : public MLIRConversionKernel {
 	public:
+
 		auto convert_graph_value(MLIRConversionData&, graph_engine::ValueID) -> mlir::Value override;
 
 	};
+
 }

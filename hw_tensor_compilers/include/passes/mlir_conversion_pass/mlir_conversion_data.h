@@ -18,11 +18,13 @@ namespace passes::mlir_conversion {
 
 	using ConversionRegistryType = std::unordered_map<
 		graph_engine::OperatorType,
-		std::unique_ptr<MLIRConversionKernel>>;
+		std::unique_ptr<MLIRConversionKernel>
+	>;
 
 	using ConversionValueMap = std::unordered_map<
 		graph_engine::ValueID, 
-		mlir::Value>;
+		mlir::Value
+	>;
 
 	/*
 	* Data viewer for conversion of graph_engine::Graph to mlir::ModuleOp
@@ -37,9 +39,9 @@ namespace passes::mlir_conversion {
 		) :
 			context(new_context), builder(new_builder), 
 			registry_(new_registry), graph(new_graph),
-			value_id_to_mlir_value(new_value_id_to_mlir_value)
-		{
-		};
+			value_id_to_mlir_value(new_value_id_to_mlir_value) {
+		}
+
 		~MLIRConversionData() = default;
 
 		MLIRConversionData(const MLIRConversionData& other) = default;

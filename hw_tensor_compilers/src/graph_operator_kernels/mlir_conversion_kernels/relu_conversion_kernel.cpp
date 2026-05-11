@@ -27,7 +27,6 @@ namespace passes::mlir_conversion {
 
         mlir::Value result;
         mlir::Value input = storage.convert_graph_value(graph.nodes[producer_node].inputs[0]);
-        //mlir::Value input = convert_graph_value_to_mlir_recursively(graph.nodes[producer_node].inputs[0]);
         mlir::Type elementType = mlir::cast<mlir::ShapedType>(input.getType()).getElementType();
 
         // ==== create zero tensor (for comparison in relu):
@@ -81,7 +80,7 @@ namespace passes::mlir_conversion {
             lambda_arith_max);  // operation
 
         result = relu_op.getResult(0);
-
         return result;
 	}
+
 }

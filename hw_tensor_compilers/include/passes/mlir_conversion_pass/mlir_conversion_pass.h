@@ -13,9 +13,8 @@
 
 
 
+namespace passes {
 
-namespace passes
-{
 	class MLIRConversionPass {
 	public:
 		MLIRConversionPass(const graph_engine::Graph& graph, mlir::MLIRContext& context); // fill registry_
@@ -45,4 +44,5 @@ namespace passes
 		std::unordered_map<graph_engine::ValueID, mlir::Value> value_id_to_mlir_value;
 
 	};
+
 }

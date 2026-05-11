@@ -3,7 +3,7 @@
 
 #include "graph/value.h"
 #include "graph/node.h"
-#include "graph/attributes.hpp"
+#include "graph/attributes.h"
 
 
 
@@ -29,20 +29,18 @@ namespace graph_engine {
 
             if (!is_graph_valid()) {
                 throw std::runtime_error("Graph : graph validity check was not passed");
-            };
-        };
+            }
+        }
 
         bool is_graph_valid() const;
 
         void reserve(size_t nodes_count, size_t values_count);
 
         // add Node without checking if Graph will still be valid
-        // NodeID add_node(OperatorType type, const std::vector<ValueID>& inputs, Attributes attrs);
-
         NodeID add_node(OperatorType type, const std::vector<ValueID>& inputs, 
             const std::vector<ValueID>& outputs, Attributes attrs);
 
         // add Value without checking if Graph will still be valid
         ValueID add_value(Shape shape, DataType dtype, NodeID producer_id);
     };
-};
+}

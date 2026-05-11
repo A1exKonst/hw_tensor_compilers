@@ -13,7 +13,7 @@ namespace io {
     class ConsoleGraphExporter : public GraphExporter {
     public:
         ConsoleGraphExporter() {
-        };
+        }
         ~ConsoleGraphExporter() override = default;
 
         ConsoleGraphExporter(const ConsoleGraphExporter&) = delete;
@@ -26,7 +26,7 @@ namespace io {
 
     };
 
-};
+}
 
 auto operator<< (std::ostream& out, const graph_engine::AttributeValue& attr_val) -> std::ostream&;
 

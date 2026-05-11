@@ -26,7 +26,7 @@ TEST(MLIRPipeline, SingleMulModel) {
 
     mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
     EXPECT_TRUE(mlir::succeeded(result));
-}
+};
 
 TEST(MLIRPipeline, SingleAddModel) {
     std::string filename = "data/single_add.onnx";

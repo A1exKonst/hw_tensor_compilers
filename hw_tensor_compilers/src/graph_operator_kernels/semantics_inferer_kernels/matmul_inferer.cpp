@@ -48,6 +48,8 @@ namespace passes::semantics_inferer {
 		result_shape[result_rank - 1] = graph.values[second].shape[result_rank - 1]; // dimension K
 
 		graph.values[out].shape = std::move(result_shape);
-	};
+
+		return;
+	}
 
 }

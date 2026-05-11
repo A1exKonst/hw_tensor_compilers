@@ -19,7 +19,6 @@ namespace passes {
 
 	SemanticsInfererPass::SemanticsInfererPass() {
 		// fill registry_
-
 		registry_[OperatorType::ADD] = std::make_unique<semantics_inferer::AddInferer>();
 		registry_[OperatorType::CONSTANT] = std::make_unique<semantics_inferer::ConstantInferer>();
 		registry_[OperatorType::CONV] = std::make_unique<semantics_inferer::ConvInferer>();
@@ -27,6 +26,7 @@ namespace passes {
 		registry_[OperatorType::MATMUL] = std::make_unique<semantics_inferer::MatmulInferer>();
 		registry_[OperatorType::MUL] = std::make_unique<semantics_inferer::MulInferer>();
 		registry_[OperatorType::RELU] = std::make_unique<semantics_inferer::ReluInferer>();
+
 	}
 
 	auto SemanticsInfererPass::transform_graph(graph_engine::Graph& graph) -> void {
@@ -34,4 +34,5 @@ namespace passes {
 			registry_.at(graph.nodes[node_id].op_type)->transform_node(graph, node_id);
 		}
 	}
+
 }

@@ -7,6 +7,7 @@
 
 
 namespace io {
+
     /**
     * Importer for class graph_engine::Graph
     * from files in format "filename.onnx"
@@ -29,4 +30,5 @@ namespace io {
         [[nodiscard]]
         auto import_graph() -> graph_engine::Graph override;
     };
-};
+
+}

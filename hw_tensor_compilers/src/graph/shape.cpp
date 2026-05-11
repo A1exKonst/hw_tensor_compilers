@@ -9,20 +9,20 @@
 
 namespace graph_engine {
 
-    int64_t Shape::operator[](size_t i) const {
+    auto Shape::operator[](size_t i) const -> int64_t {
         if (i >= rank_) throw std::out_of_range("index >= shape::rank");
         return dims[i];
-    };
+    }
 
-    int64_t& Shape::operator[](size_t i) {
+    auto Shape::operator[](size_t i) -> int64_t& {
         if (i >= rank_) throw std::out_of_range("index >= shape::rank");
         return dims[i];
-    };
+    }
 
-    void Shape::rank(size_t rank__) {
+    auto Shape::rank(size_t rank__) -> void {
         if (rank__ >= MAX_VALUE_RANK) {
             throw std::length_error("Shape::rank(new_rank) : rank should be less than MAX_VALUE_RANK");
-        };
+        }
 
         // when expanding matrix default size in a dim is 1
         for (unsigned short i = rank_; i < rank__; ++i) dims[i] = 1;
@@ -31,11 +31,12 @@ namespace graph_engine {
 
         // ensure cropping shape when flattenning matrix
         for (unsigned int i = rank_ + 1; i < MAX_VALUE_RANK; ++i) dims[i] = 0;
-    };
 
-    size_t Shape::rank() const noexcept { return rank_; };
+    }
 
-    bool Shape::operator== (const Shape& other) const {
+    auto Shape::rank() const noexcept -> size_t { return rank_; }
+
+    auto Shape::operator== (const Shape& other) const -> bool {
 
         if (rank_ != other.rank()) return false;
 
@@ -43,15 +44,20 @@ namespace graph_engine {
             if (dims[i] != other[i]) return false;
         }
         return true;
-    };
 
-    size_t Shape::elements_size() const {
+    }
+
+    auto Shape::elements_size() const -> size_t {
         size_t sz = 1;
         for (unsigned short i = 0; i < rank_; ++i) sz*=dims[i];
         return sz;
-    };
+    }
 
-    std::optional<Shape> calculate_broadcast_compatible_shape(const Shape& s1, const Shape& s2, const unsigned start_rank) {
+    auto calculate_broadcast_compatible_shape(
+        const Shape& s1, 
+        const Shape& s2, 
+        const unsigned start_rank
+    ) -> std::optional<Shape> {
 
         unsigned min_rank = (s1.rank() < s2.rank()) ? s1.rank() : s2.rank();
         unsigned max_rank = (s1.rank() > s2.rank()) ? s1.rank() : s2.rank();
@@ -74,10 +80,14 @@ namespace graph_engine {
         for (int i = min_rank + 1; i <= max_rank; ++i) {
             result[max_rank - i] = max_rank_shape[max_rank - i];
         }
-        return result;
-    };
 
-    std::optional<Shape> calculate_matmul_compatible_shape(const Shape& s1, const Shape& s2) {
+        return result;
+    }
+
+    auto calculate_matmul_compatible_shape(
+        const Shape& s1, 
+        const Shape& s2
+    ) -> std::optional<Shape> {
 
         size_t s1_last_index = s1.rank() - 1;
         size_t s2_last_index = s2.rank() - 1;
@@ -94,10 +104,15 @@ namespace graph_engine {
         size_t last_index = result.rank() - 1;
         result[last_index - 0] = s2[s2_last_index - 0];
         result[last_index - 1] = s1[s1_last_index - 1];
-        return result;
-    };
 
-    Shape transposed(const Shape& s, unsigned short axis_1, unsigned short axis_2) {
+        return result;
+    }
+
+    auto transposed(
+        const Shape& s, 
+        unsigned short axis_1, 
+        unsigned short axis_2
+    ) -> Shape {
         Shape result{ s };
 
         int64_t k = std::move(result[axis_1]);
@@ -105,10 +120,11 @@ namespace graph_engine {
         result[axis_2] = std::move(k);
 
         return result;
-    };
+    }
 
-    Shape transposed(const Shape& s) {
+    auto transposed(const Shape& s) -> Shape {
         Shape result{ s };
         return transposed(result, result.rank() - 1, result.rank() - 2);
-    };
-};
+    }
+
+}

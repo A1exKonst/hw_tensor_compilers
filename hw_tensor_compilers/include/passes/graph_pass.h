@@ -2,7 +2,12 @@
 #include "graph/graph.h"
 
 
+
 namespace passes {
+
+	/*
+	* Interface class for passes, that modify or process graph_engine::Graph
+	*/
 	class GraphPass {
 	public:
 		virtual ~GraphPass() = default;
@@ -14,4 +19,5 @@ namespace passes {
 	protected:
 		GraphPass() = default;
 	};
+
 }

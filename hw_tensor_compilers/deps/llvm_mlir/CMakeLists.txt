@@ -37,7 +37,6 @@ target_link_libraries(mlir_deps INTERFACE
     MLIRTensorToLinalg
     MLIRMemRefToSPIRV
     MLIRReconcileUnrealizedCasts
-    #MLIRConvertFuncToLLVM
     MLIRSCFToControlFlow
     MLIRMemRefToLLVM
     MLIRTensorTilingInterfaceImpl
@@ -54,7 +53,6 @@ target_link_libraries(mlir_deps INTERFACE
     MLIRMemRefDialect
     MLIRSCFDialect
     MLIRBufferizationDialect
-    #MLIRConversionPasses 
 
     # Core:
     MLIRPass

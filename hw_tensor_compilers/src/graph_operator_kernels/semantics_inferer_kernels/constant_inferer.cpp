@@ -12,6 +12,6 @@ namespace passes::semantics_inferer {
 	auto ConstantInferer::transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void {
 		Node& node = graph.nodes.at(node_id);
 		expect(node.outputs.size() == 1, "Node[Constant] : one output Value is expected");
-	};
+	}
 
 }

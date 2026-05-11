@@ -8,6 +8,7 @@
 
 
 namespace graph_engine {
+
     using NodeID = size_t;
 
     // Each operation in a computing graph is a Node (declared in "graph/node.h").
@@ -39,6 +40,9 @@ namespace graph_engine {
 
         Value(Shape shape_, DataType dtype_, NodeID producer_node_id_, std::vector<NodeID> consumer_node_ids_) :
             shape(std::move(shape_)), dtype(std::move(dtype_)), producer_node_id(producer_node_id_),
-            consumer_node_ids(std::move(consumer_node_ids_)){};
+            consumer_node_ids(std::move(consumer_node_ids_)) {
+        }
+
     };
-};
+
+}

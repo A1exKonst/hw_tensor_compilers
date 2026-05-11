@@ -30,8 +30,10 @@ namespace passes::semantics_inferer {
 		DataType result_type = graph_engine::math_result_data_type(
 			graph_engine::math_result_data_type(
 				first_val.dtype,
-				second_val.dtype),
-			third_val.dtype);
+				second_val.dtype
+			),
+			third_val.dtype
+		);
 
 		expect_dtype(graph, first, result_type);
 		expect_dtype(graph, second, result_type);
@@ -59,27 +61,8 @@ namespace passes::semantics_inferer {
 		std::optional<Shape> gemm_shape = graph_engine::calculate_broadcast_compatible_shape(matmul_shape.value(), third_val.shape);
 		expect(gemm_shape.has_value(), "Values for Gemm : cannot add matrices");
 		expect_shape(graph, out, gemm_shape.value());
-		/*
-		unsigned short M = first_val.shape[0];
-		unsigned short N = (first_val.shape[1] > second_val.shape[0]) ? first_val.shape[1] : second_val.shape[0];
-		unsigned short K = second_val.shape[1];
 
-		expect(first_val.shape[1] == 0 || first_val.shape[1] == N,
-			"Values for Gemm : cannot multiply matrices");
-		expect(second_val.shape[0] == 0 || second_val.shape[0] == N,
-			"Values for Gemm : cannot multiply matrices");
-		first_val.shape[1] = N;
-		second_val.shape[0] = N;
-		expect(
-			((third_val.shape[0] == 0 || third_val.shape[0] == M) &&
-				(third_val.shape[1] == 0 || third_val.shape[1] == K)) ||
-			((third_val.shape[1] == 0 || third_val.shape[1] == M) &&
-				(third_val.shape[0] == 0 || third_val.shape[0] == K)),
-			"Values for Gemm : cannot add matrices");
-		third_val.shape[0] = M;
-		third_val.shape[1] = K;
-		expect_shape(graph, out, third_val.shape);
-		*/
-	};
+		return;
+	}
 
 }

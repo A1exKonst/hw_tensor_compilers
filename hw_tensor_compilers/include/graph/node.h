@@ -3,7 +3,7 @@
 #include <optional>
 #include <unordered_map>
 
-#include "graph/attributes.hpp"
+#include "graph/attributes.h"
 
 
 
@@ -26,13 +26,13 @@ namespace graph_engine {
         COUNT
     };
 
-    // Узел графа (Операция)
+    // Graph Node is an Operator, corresponding to calculations on values
     class Node {
     public:
         OperatorType op_type;
 
-        std::vector<ValueID> inputs;  // ID входящих Value
-        std::vector<ValueID> outputs; // ID исходящих Value
+        std::vector<ValueID> inputs;  // input Value IDs in a Graph
+        std::vector<ValueID> outputs; // output Value IDs in a Graph
 
         Attributes attr;
 
@@ -45,7 +45,7 @@ namespace graph_engine {
 
         Node(OperatorType op_type_, std::vector<ValueID> inputs_, std::vector<ValueID> outputs_, Attributes attr_) :
             op_type(op_type_), inputs(std::move(inputs_)), outputs(std::move(outputs_)),  attr(attr_) {
-        };
+        }
     };
 
     inline const std::unordered_map<OperatorType, std::string> operator_type_to_str = {

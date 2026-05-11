@@ -7,5 +7,7 @@
 
 namespace passes::semantics_inferer {
 
-	class MulInferer : public passes::semantics_inferer::ElementwiseBinOperationInferer {};
+	class MulInferer : public passes::semantics_inferer::ElementwiseBinOperationInferer {
+	};
+
 }

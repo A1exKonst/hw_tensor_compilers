@@ -102,13 +102,13 @@ namespace passes::mlir_conversion {
                 mlir::ValueRange{ a, b },                   //inputs
                 mlir::ValueRange{ matmul_init }             //outputs
             );
-        };
+        }
 
         // because SSA, matmul_init is a start state of output of operation (zeroed tensor), 
         // and is not a result of matmul
         mlir::Value matmul_result = matmul_op->getResult(0);
         return matmul_result;
-    };
+    }
 
     auto scalar_mul(mlir::Value A, float s, mlir::OpBuilder& builder, mlir::Location loc) -> mlir::Value {
         auto shaped_type = A.getType().cast<mlir::ShapedType>();
@@ -130,7 +130,6 @@ namespace passes::mlir_conversion {
 
         llvm::SmallVector<mlir::utils::IteratorType> iter_types(
             shaped_type.getRank(), mlir::utils::IteratorType::parallel);
-        //auto iterTypesAttr = builder.getArrayAttr(iterTypes);
 
         auto generic_op = builder.create<mlir::linalg::GenericOp>(
             loc,
@@ -140,7 +139,7 @@ namespace passes::mlir_conversion {
             indexing_maps,
             iter_types,
             [&](mlir::OpBuilder& nestedBuilder, mlir::Location nestedLoc, mlir::ValueRange args) {
-                // args[0] = , args[1] = элемент A
+                // args[0] = scalar, args[1] = A[i,j] element
                 mlir::Value mul = nestedBuilder.create<mlir::arith::MulFOp>(
                     nestedLoc,
                     args[0],  // scalar
@@ -151,4 +150,5 @@ namespace passes::mlir_conversion {
 
         return generic_op.getResult(0);
     }
-};
+
+}

@@ -30,6 +30,6 @@ namespace passes::mlir_management {
 
 		auto result = pm.run(model);
 		return result;
-	};
+	}
 
 }
