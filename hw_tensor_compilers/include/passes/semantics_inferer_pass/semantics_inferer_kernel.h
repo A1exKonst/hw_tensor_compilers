@@ -10,16 +10,16 @@ namespace passes {
 		/*
 		* Interface class for inference of different graph/node.h/OperatorType
 		*/
-		class SemanticsInferer {
+		class SemanticsInfererKernel {
 		public:
-			virtual ~SemanticsInferer() = default;
-			SemanticsInferer(const SemanticsInferer&) = delete;
-			SemanticsInferer& operator=(const SemanticsInferer&) = delete;
+			virtual ~SemanticsInfererKernel() = default;
+			SemanticsInfererKernel(const SemanticsInfererKernel&) = delete;
+			SemanticsInfererKernel& operator=(const SemanticsInfererKernel&) = delete;
 
 			virtual auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void = 0;
 
 		protected:
-			SemanticsInferer() = default;
+			SemanticsInfererKernel() = default;
 		};
 
 	}

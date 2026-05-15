@@ -2,14 +2,14 @@
 
 #include "passes/semantics_inferer_pass/semantics_inferer_pass.h"
 #include "graph/node.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/add_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/constant_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/conv_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/mul_inferer.h"
-#include "graph_operator_kernels/semantics_inferer_kernels/relu_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/add_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/constant_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/conv_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/mul_inferer_kernel.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/relu_inferer_kernel.h"
 
 using namespace graph_engine;
 
@@ -19,13 +19,13 @@ namespace passes {
 
 	SemanticsInfererPass::SemanticsInfererPass() {
 		// fill registry_
-		registry_[OperatorType::ADD] = std::make_unique<semantics_inferer::AddInferer>();
-		registry_[OperatorType::CONSTANT] = std::make_unique<semantics_inferer::ConstantInferer>();
-		registry_[OperatorType::CONV] = std::make_unique<semantics_inferer::ConvInferer>();
-		registry_[OperatorType::GEMM] = std::make_unique<semantics_inferer::GemmInferer>();
-		registry_[OperatorType::MATMUL] = std::make_unique<semantics_inferer::MatmulInferer>();
-		registry_[OperatorType::MUL] = std::make_unique<semantics_inferer::MulInferer>();
-		registry_[OperatorType::RELU] = std::make_unique<semantics_inferer::ReluInferer>();
+		registry_[OperatorType::ADD] = std::make_unique<semantics_inferer::AddInfererKernel>();
+		registry_[OperatorType::CONSTANT] = std::make_unique<semantics_inferer::ConstantInfererKernel>();
+		registry_[OperatorType::CONV] = std::make_unique<semantics_inferer::ConvInfererKernel>();
+		registry_[OperatorType::GEMM] = std::make_unique<semantics_inferer::GemmInfererKernel>();
+		registry_[OperatorType::MATMUL] = std::make_unique<semantics_inferer::MatmulInfererKernel>();
+		registry_[OperatorType::MUL] = std::make_unique<semantics_inferer::MulInfererKernel>();
+		registry_[OperatorType::RELU] = std::make_unique<semantics_inferer::ReluInfererKernel>();
 
 	}
 

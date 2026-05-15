@@ -1,5 +1,5 @@
 #pragma once
-#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer_kernel.h"
 #include "passes/semantics_inferer_pass/utils.h"
 #include "graph/graph.h"
 
@@ -9,7 +9,7 @@ using namespace graph_engine;
 
 namespace passes::semantics_inferer {
 
-	auto ElementwiseBinOperationInferer::transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void {
+	auto ElementwiseBinOperationInfererKernel::transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void {
 		Node& node = graph.nodes.at(node_id);
 		expect(node.inputs.size() == 2, "Node[Elementwise Binop] : two input Values are expected");
 		expect(node.outputs.size() == 1, "Node[Elementwise Binop] : one output Value is expected");

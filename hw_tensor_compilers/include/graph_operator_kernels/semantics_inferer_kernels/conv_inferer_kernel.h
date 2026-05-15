@@ -1,16 +1,17 @@
 #pragma once
-#include "passes/semantics_inferer_pass/semantics_inferer.h"
+#include "passes/semantics_inferer_pass/semantics_inferer_kernel.h"
 #include "graph/graph.h"
 
 
 
 namespace passes::semantics_inferer {
 
-	class MatmulInferer : public passes::semantics_inferer::SemanticsInferer {
+	class ConvInfererKernel : public passes::semantics_inferer::SemanticsInfererKernel {
 	public:
-		MatmulInferer() = default;
+		ConvInfererKernel() = default;
 
 		auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void override;
+
 	};
 
 }

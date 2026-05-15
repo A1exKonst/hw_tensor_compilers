@@ -1,10 +1,10 @@
 set(SEMANTICS_KERNELS
-    "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer.cpp" 
-    "graph_operator_kernels/semantics_inferer_kernels/conv_inferer.cpp" 
-    "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer.cpp" 
-    "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer.cpp"
-    "graph_operator_kernels/semantics_inferer_kernels/relu_inferer.cpp"
-    "graph_operator_kernels/semantics_inferer_kernels/constant_inferer.cpp"
+    "graph_operator_kernels/semantics_inferer_kernels/elementwise_binop_inferer_kernel.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/conv_inferer_kernel.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/gemm_inferer_kernel.cpp" 
+    "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer_kernel.cpp"
+    "graph_operator_kernels/semantics_inferer_kernels/relu_inferer_kernel.cpp"
+    "graph_operator_kernels/semantics_inferer_kernels/constant_inferer_kernel.cpp"
 )
 
 set(MLIR_CONVERSION_KERNELS

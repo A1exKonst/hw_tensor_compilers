@@ -1,5 +1,5 @@
 #pragma once
-#include "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer.h"
+#include "graph_operator_kernels/semantics_inferer_kernels/matmul_inferer_kernel.h"
 #include "graph/graph.h"
 #include "passes/semantics_inferer_pass/utils.h"
 
@@ -9,7 +9,7 @@ using namespace graph_engine;
 
 namespace passes::semantics_inferer {
 
-	auto MatmulInferer::transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void {
+	auto MatmulInfererKernel::transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void {
 		Node& node = graph.nodes.at(node_id);
 
 		expect(node.outputs.size() == 1,

@@ -1,14 +1,14 @@
 #pragma once
-#include "passes/semantics_inferer_pass/semantics_inferer.h"
+#include "passes/semantics_inferer_pass/semantics_inferer_kernel.h"
 #include "graph/graph.h"
 
 
 
 namespace passes::semantics_inferer {
 
-	class ElementwiseBinOperationInferer : public passes::semantics_inferer::SemanticsInferer {
+	class ConstantInfererKernel : public passes::semantics_inferer::SemanticsInfererKernel {
 	public:
-		ElementwiseBinOperationInferer() = default;
+		ConstantInfererKernel() = default;
 
 		auto transform_node(graph_engine::Graph& graph, const graph_engine::NodeID node_id) -> void override;
 
