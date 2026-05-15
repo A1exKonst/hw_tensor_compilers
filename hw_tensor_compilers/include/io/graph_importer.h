@@ -14,6 +14,7 @@ namespace io {
         GraphImporter(const GraphImporter&) = delete;
         GraphImporter& operator=(const GraphImporter&) = delete;
 
+        [[nodiscard]]
         virtual auto import_graph() -> graph_engine::Graph = 0;
 
     protected:
