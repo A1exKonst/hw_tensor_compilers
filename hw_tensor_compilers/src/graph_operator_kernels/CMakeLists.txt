@@ -13,6 +13,7 @@ set(MLIR_CONVERSION_KERNELS
     "graph_operator_kernels/mlir_conversion_kernels/conv_conversion_kernel.cpp" 
     "graph_operator_kernels/mlir_conversion_kernels/gemm_conversion_kernel.cpp" 
     "graph_operator_kernels/mlir_conversion_kernels/mul_conversion_kernel.cpp" 
+    "graph_operator_kernels/mlir_conversion_kernels/matmul_conversion_kernel.cpp"
     "graph_operator_kernels/mlir_conversion_kernels/relu_conversion_kernel.cpp"
 )
 

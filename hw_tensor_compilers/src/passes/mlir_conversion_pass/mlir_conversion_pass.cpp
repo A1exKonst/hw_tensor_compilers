@@ -9,6 +9,7 @@
 #include "graph_operator_kernels/mlir_conversion_kernels/constant_conversion_kernel.h"
 #include "graph_operator_kernels/mlir_conversion_kernels/conv_conversion_kernel.h"
 #include "graph_operator_kernels/mlir_conversion_kernels/gemm_conversion_kernel.h"
+#include "graph_operator_kernels/mlir_conversion_kernels/matmul_conversion_kernel.h"
 #include "graph_operator_kernels/mlir_conversion_kernels/mul_conversion_kernel.h"
 #include "graph_operator_kernels/mlir_conversion_kernels/relu_conversion_kernel.h"
 
@@ -31,6 +32,7 @@ namespace passes {
 		registry_[OperatorType::CONSTANT] = std::make_unique<mlir_conversion::ConstantConversionKernel>();
 		registry_[OperatorType::CONV] = std::make_unique<mlir_conversion::ConvConversionKernel>();
 		registry_[OperatorType::GEMM] = std::make_unique<mlir_conversion::GemmConversionKernel>();
+        registry_[OperatorType::MATMUL] = std::make_unique<mlir_conversion::MatmulConversionKernel>();
 		registry_[OperatorType::MUL] = std::make_unique<mlir_conversion::MulConversionKernel>();
 		registry_[OperatorType::RELU] = std::make_unique<mlir_conversion::ReluConversionKernel>();
 	}
