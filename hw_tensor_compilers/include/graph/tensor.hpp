@@ -11,9 +11,6 @@ namespace graph_engine {
 	class Tensor;
 
 	template <typename DType>
-	auto make_tensor(std::vector<DType> data, Shape shape) -> Tensor<DType>;
-
-	template <typename DType>
 	class Tensor {
 		std::vector<DType> data_;
 		graph_engine::Shape shape_;
@@ -23,7 +20,6 @@ namespace graph_engine {
 			shape_ = std::move(shape__);
 		}
 
-		friend auto make_tensor(std::vector<DType> data__, Shape shape__) -> Tensor<DType>;
 	public:
 		Tensor() = default;
 		Tensor(const Tensor&) = default;
@@ -38,7 +34,7 @@ namespace graph_engine {
 			if (data_.size() != shape__.elements_size()) {
 				throw std::length_error("Invalid Tensor.shape(new_shape) : data.size() != new_shape.elements_size()");
 			}
-			shape_ = shape__;
+			shape_ = std::move(shape__);
 		}
 
 		auto data() -> std::vector<DType>& { return data_; }

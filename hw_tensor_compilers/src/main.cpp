@@ -12,7 +12,7 @@
 int main() {
 
 	try {
-		std::string version = "0.2.87";
+		std::string version = "0.2.89";
 		std::cout << "exec " << version << std::endl;
 
 		std::string filename = "data/single_conv.onnx";
@@ -32,7 +32,7 @@ int main() {
 			std::move(passes)
 		);
 
-		pipeline.apply_pipeline(passes::PipelineEndpoint::MLIR_LOWERING, false);
+		pipeline.apply_pipeline(passes::PipelineEndpoint::EXECUTION, false);
 		
 		std::cout << "exec " << version << std::endl;
 	}
