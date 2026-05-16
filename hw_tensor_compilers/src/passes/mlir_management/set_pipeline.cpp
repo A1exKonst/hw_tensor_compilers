@@ -74,11 +74,9 @@ namespace passes::mlir_management {
 		pm.addPass(mlir::createConvertSCFToCFPass());
 		pm.addPass(mlir::createConvertControlFlowToLLVMPass());
 		pm.addPass(mlir::createArithToLLVMConversionPass());
-		pm.addPass(mlir::createConvertFuncToLLVMPass());
-		//pm.addPass(mlir::createCanonicalizerPass());
-
 		pm.addPass(mlir::createFinalizeMemRefToLLVMConversionPass());
-		
+		pm.addPass(mlir::createConvertFuncToLLVMPass());
+
 		pm.addPass(mlir::createReconcileUnrealizedCastsPass());
 		pm.addPass(mlir::createCanonicalizerPass());
 		/*

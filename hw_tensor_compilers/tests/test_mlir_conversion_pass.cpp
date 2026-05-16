@@ -76,6 +76,22 @@ TEST(MLIRPipeline, SingleMatMulModel) {
     EXPECT_TRUE(mlir::succeeded(result));
 };
 
+TEST(MLIRPipeline, SingleBatchMatMulModel) {
+    std::string filename = "data/single_batch_matmul.onnx";
+
+    graph_engine::Graph graph = io::OnnxImporter(filename).import_graph();
+    EXPECT_NO_THROW(passes::SemanticsInfererPass().transform_graph(graph));
+
+    mlir::MLIRContext context;
+    passes::mlir_management::set_context(context);
+    passes::MLIRConversionPass conversion_pass(graph, context);
+    mlir::OwningOpRef<mlir::ModuleOp> model = conversion_pass.convert();
+    EXPECT_TRUE(mlir::succeeded(model->verify()));
+
+    mlir::LogicalResult result = passes::mlir_management::lower_to_llvm(*model, false);
+    EXPECT_TRUE(mlir::succeeded(result));
+};
+
 TEST(MLIRPipeline, SingleConvModel) {
     std::string filename = "data/single_conv.onnx";
 
