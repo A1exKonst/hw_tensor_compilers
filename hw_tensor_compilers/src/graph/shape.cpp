@@ -40,11 +40,7 @@ namespace graph_engine {
 
         if (rank_ != other.rank()) return false;
 
-        for (int i = 0; i < rank_; ++i) {
-            if (dims[i] != other[i]) return false;
-        }
-        return true;
-
+        return std::equal(dims.begin(), dims.begin() + rank_, other.begin());
     }
 
     auto Shape::elements_size() const -> size_t {
