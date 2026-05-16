@@ -37,8 +37,10 @@ namespace graph_engine {
 			shape_ = std::move(shape__);
 		}
 
+		[[nodiscard]]
 		auto data() -> std::vector<DType>& { return data_; }
 
+		[[nodiscard]]
 		static auto make_tensor(std::vector<DType> data, Shape shape) -> Tensor<DType> {
 			if (data.size() != shape.elements_size()) {
 				throw std::length_error("Invalid Tensor initialization : data.size() != shape.elements_size()");
