@@ -15,9 +15,8 @@ int main() {
 		std::string version = "0.2.95";
 		std::cout << "exec " << version << std::endl;
 
-		std::string filename = "data/single_batch_matmul.onnx";
-		// correct lowering		: gemm, relu, mul, add, matmul
-		// incorrect lowering	: conv
+		std::string filename = "data/tiny.onnx";
+		// correct lowering		: gemm, relu, mul, add, matmul, batch_matmul
 		
 		std::vector<std::unique_ptr<passes::GraphPass>> passes;
 		passes.push_back(std::make_unique<passes::SemanticsInfererPass>());

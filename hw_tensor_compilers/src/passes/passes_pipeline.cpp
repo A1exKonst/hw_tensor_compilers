@@ -113,7 +113,7 @@ namespace passes {
 
 		void* args[] = { &result_placeholder, &input_descriptor };
 		std::cout << "call engine->invoke(main)" << std::endl;
-		auto error = engine->invokePacked("main", args);
+		auto error = engine->invokePacked("_mlir_ciface_main", args);
 		if (error) {
 			llvm::errs() << "Execution failed\n";
 		}

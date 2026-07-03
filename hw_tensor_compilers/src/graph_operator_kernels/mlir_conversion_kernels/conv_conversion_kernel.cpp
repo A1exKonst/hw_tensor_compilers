@@ -135,14 +135,10 @@ namespace passes::mlir_conversion {
 
         mlir::Value result;
 
-        //std::cout << "== input_init ==" << std::endl;
-        //std::cout << graph.values.at(graph.nodes.at(producer_node).inputs[0]) << std::endl;
         mlir::Value input = storage.convert_graph_value(graph.nodes.at(producer_node).inputs[0]);
         //llvm::errs() << input;
         mlir::Value filter = storage.convert_graph_value(graph.nodes[producer_node].inputs[1]);
         //std::cout << "== end input_init ==" << std::endl;
-
-        //std::cout << 0;
         
         // Attributes:
         // strides, dilations:  linalg::Conv2DOp takes attributes 
@@ -153,8 +149,6 @@ namespace passes::mlir_conversion {
         const auto& strides = std::get<std::vector<int64_t>>(graph.nodes.at(producer_node).attr.at("strides"));
         const auto& dilations = std::get<std::vector<int64_t>>(graph.nodes.at(producer_node).attr.at("dilations"));
         auto group = std::get<int64_t>(graph.nodes.at(producer_node).attr.at("group"));
-
-        //std::cout << 0;
         
         // 0. Flatten shape to (NCHW)
         // if input tensor has rank > 4, it is flattened.
@@ -164,26 +158,7 @@ namespace passes::mlir_conversion {
         mlir::Value output;
         mlir::Value zero = builder.create<mlir::arith::ConstantOp>(loc, builder.getZeroAttr(output_type.getElementType()));
         output = builder.create<mlir::linalg::FillOp>(loc, zero, init_tensor).result();
-        /*
-        // init destination with zeroes:
-        if (graph.nodes[producer_node].inputs.size() < 3) {
-            mlir::Value zero = builder.create<mlir::arith::ConstantOp>(loc, builder.getZeroAttr(output_type.getElementType()));
-            output = builder.create<mlir::linalg::FillOp>(loc, zero, init_tensor).result();
-        }
-        else { // V3 as bias arg in Convolution:
-            mlir::Value bias = storage.convert_graph_value(graph.nodes[producer_node].inputs[2]);
-            auto bias_type = mlir::cast<mlir::RankedTensorType>(bias.getType());
-            int64_t last_dim = output_type.getRank() - 1;
 
-            // fill init_tensor with bias for all H, W
-            output = builder.create<mlir::linalg::BroadcastOp>(
-                loc,
-                bias,
-                init_tensor,
-                mlir::ArrayRef<int64_t>{1} // broadcasted dims
-            ).getResults()[0];
-        }
-        */
         auto input_type = llvm::cast<mlir::RankedTensorType>(input.getType());
         if (input_type.getRank() != 4) throw std::runtime_error("MLIRConversion: Conv received input, which rank is not 4");
 
@@ -191,20 +166,9 @@ namespace passes::mlir_conversion {
         // padding is applied to dimensions H and W of input.
         bool pads_all_zeros = std::all_of(pads.begin(), pads.end(), [](int i) { return i == 0; });
         if (!pads_all_zeros) {
-            //std::cout << " apply padding" << std::endl;
-            //std::cout << "args: " << std::endl;
-            //llvm::errs() << input;
-            //std::cout << std::endl << "pads: ";
-            //for (const auto& pad : pads) { std::cout << pad << " "; }
             input = conv_pad(builder, loc, input, pads);
-            //llvm::errs() << input;
-            //std::cout << " end apply padding ";
         }
         input_type = llvm::cast<mlir::RankedTensorType>(input.getType());
-        
-
-
-        //std::cout << 2;
         
         // 2. Convolution:
         // I: input.shape(batch_size, c_in, h_in, w_in)
@@ -287,38 +251,6 @@ namespace passes::mlir_conversion {
         auto input_w_index_expr = j_expr * s_w + n_expr * d_w;
 
         auto input_map = mlir::AffineMap::get(7, 0, { b_expr, input_c_index_expr, input_h_index_expr, input_w_index_expr }, context);
-        /*
-        std::cout << 5;
-        std::cout << std::endl << std::endl;
-
-        std::cout << "== input: ==" << std::endl;
-        llvm::errs() << input;
-        std::cout << std::endl;
-
-        std::cout << "== input_map: ==" << std::endl;
-        llvm::errs() << input_map;
-        std::cout << std::endl;
-
-        std::cout << "== filter: ==" << std::endl;
-        llvm::errs() << filter;
-        std::cout << std::endl;
-
-        std::cout << "== filter_map: ==" << std::endl;
-        llvm::errs() << filter_map;
-        std::cout << std::endl;
-
-        std::cout << "== output: ==" << std::endl;
-        llvm::errs() << output;
-        std::cout << std::endl;
-
-        std::cout << "== output_map: ==" << std::endl;
-        llvm::errs() << output_map;
-        std::cout << std::endl;
-
-        std::cout << "== iter_types: ==" << std::endl;
-        //llvm::errs() << iter_types;
-        */
-
 
         llvm::SmallVector<mlir::AffineMap> maps = { input_map, filter_map, output_map };
         mlir::ValueRange inputs = { input, filter };
@@ -348,6 +280,11 @@ namespace passes::mlir_conversion {
         //std::cout << 7;
         return result;
     }
+
+
+
+
+
 
 	auto ConvConversionKernel::convert_graph_value(MLIRConversionData& storage, graph_engine::ValueID value_id) -> mlir::Value {
 
@@ -427,3 +364,24 @@ namespace passes::mlir_conversion {
         return result;
 	}
 }
+
+/*
+// init destination with zeroes:
+if (graph.nodes[producer_node].inputs.size() < 3) {
+    mlir::Value zero = builder.create<mlir::arith::ConstantOp>(loc, builder.getZeroAttr(output_type.getElementType()));
+    output = builder.create<mlir::linalg::FillOp>(loc, zero, init_tensor).result();
+}
+else { // V3 as bias arg in Convolution:
+    mlir::Value bias = storage.convert_graph_value(graph.nodes[producer_node].inputs[2]);
+    auto bias_type = mlir::cast<mlir::RankedTensorType>(bias.getType());
+    int64_t last_dim = output_type.getRank() - 1;
+
+    // fill init_tensor with bias for all H, W
+    output = builder.create<mlir::linalg::BroadcastOp>(
+        loc,
+        bias,
+        init_tensor,
+        mlir::ArrayRef<int64_t>{1} // broadcasted dims
+    ).getResults()[0];
+}
+*/

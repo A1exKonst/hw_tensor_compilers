@@ -18,7 +18,7 @@ using namespace graph_engine;
 namespace passes {
 
 	SemanticsInfererPass::SemanticsInfererPass() {
-		// fill registry_
+		// fill registry_: for each OperatorType choose kernel, which will check operation validity
 		registry_[OperatorType::ADD] = std::make_unique<semantics_inferer::AddInfererKernel>();
 		registry_[OperatorType::CONSTANT] = std::make_unique<semantics_inferer::ConstantInfererKernel>();
 		registry_[OperatorType::CONV] = std::make_unique<semantics_inferer::ConvInfererKernel>();
